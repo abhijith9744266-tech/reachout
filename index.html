@@ -1014,7 +1014,7 @@ function gmailAuth(){
   const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.gmailClientId}&redirect_uri=${encodeURIComponent(redir)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
   const pop=window.open(url,'gmailOAuth','width=500,height=600');
   const poll=setInterval(()=>{
-    try{if(!pop||pop.closed){clearInterval(poll);return;}const h=pop.location.hash;if(h&&h.includes('access_token')){gmailToken=new URLSearchParams(h.substring(1)).get('access_token');clearInterval(poll);pop.close();CFG.sendMethod='gmail';sv();updateMUI();updateDashGmailCard();if($('gmail-st'))$('gmail-st').textContent='✅ Gmail authorized! Auto-send is live.';toast('🎉 Gmail connected! Zero-click send enabled.','tok',6000);}}catch(e){}
+    try{if(!pop||pop.closed){clearInterval(poll);return;}const h=pop.location.hash;if(h&&h.includes('access_token')){gmailToken=new URLSearchParams(h.substring(1)).get('access_token');localStorage.setItem('rv_gtoken',gmailToken);clearInterval(poll);pop.close();CFG.sendMethod='gmail';sv();updateMUI();updateDashGmailCard();if($('gmail-st'))$('gmail-st').textContent='✅ Gmail authorized! Auto-send is live.';toast('🎉 Gmail connected! Zero-click send enabled.','tok',6000);}}catch(e){}
   },400);
 }
 function dashGmailAuth(){
@@ -1033,6 +1033,7 @@ function dashGmailAuth(){
       const h=pop.location.hash;
       if(h&&h.includes('access_token')){
         gmailToken=new URLSearchParams(h.substring(1)).get('access_token');
+        localStorage.setItem('rv_gtoken',gmailToken);
         clearInterval(poll);pop.close();
         CFG.sendMethod='gmail';sv();updateMUI();updateDashGmailCard();
         if($('gmail-st'))$('gmail-st').textContent='✅ Gmail authorized!';
@@ -1213,6 +1214,7 @@ RESPOND WITH ONLY THE NOTE TEXT. Nothing else.`;
 // ═══ EMAIL DISPATCH ════════════════════════════════════
 async function dispatch(t,subj,body){
   const m=CFG.sendMethod||'tab';
+  if(!gmailToken)gmailToken=localStorage.getItem('rv_gtoken')||null;
   if(m==='gmail'&&gmailToken)return sendGmailAPI(t,subj,body);
   if(m==='ejs'&&CFG.ejsServiceId)return sendEJS(t,subj,body);
   openTab(t,subj,body);return{ok:true,method:'tab'};
