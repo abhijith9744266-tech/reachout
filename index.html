@@ -1184,9 +1184,55 @@ function updateDash(){
 
 // ═══ AI ═══════════════════════════════════════════════
 async function ai(prompt){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
-  const d=await r.json();if(d.error)throw new Error(d.error.message);
-  return d.content?.[0]?.text||'';
+  // Use API key if configured
+  const key=CFG.anthropicKey||'';
+  if(key){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();if(d.error)throw new Error(d.error.message);
+    return d.content?.[0]?.text||'';
+  }
+  // Fallback: smart templates (no API key needed)
+  return aiTemplate(prompt);
+}
+function aiTemplate(prompt){
+  // Extract target info from prompt
+  const isIntern=prompt.includes('internship application');
+  const coMatch=prompt.match(/Target: ([^|]+)/);const co=coMatch?coMatch[1].trim():'the company';
+  const roleMatch=prompt.match(/\| ([^|]+) \| (?:Job|Internship)/);const role=roleMatch?roleMatch[1].trim():'the role';
+  const isLI=prompt.includes('LinkedIn connection note');
+  if(isLI){
+    return `Hi! I'm Abhijith, a Cloud Security & DevSecOps engineer with AWS and Docker experience. Really admire what ${co} is building in the security space. Would love to connect and explore opportunities. Let's connect!`;
+  }
+  const subj=isIntern?`Internship Application — ${role} | Abhijith A`:`Application for ${role} — Abhijith A | Cloud Security & DevSecOps`;
+  const body=isIntern?
+`Hi Team,
+
+I'm Abhijith A, a Cloud Security & DevSecOps enthusiast with hands-on experience in AWS security (IAM, GuardDuty, Security Hub), Docker, GitHub Actions, and Python. I recently completed my BE in Computer Science and an Advanced Data Science & AI program at IIT Roorkee.
+
+I built two production-grade projects — a serverless AWS security compliance framework and a CI/CD pipeline with Docker and GitHub Actions — which align closely with what ${co} works on.
+
+I'd love to contribute as a ${role} intern and grow with your team. Could we schedule a quick call?
+
+${P.sig||'Best regards,
+Abhijith A
++91 7902260801
+linkedin.com/in/abhijith-a-9252a536a'}`
+:
+`Hi Team,
+
+I'm Abhijith A, a Cloud Security Analyst and DevSecOps Engineer based in Pune. I have hands-on experience with AWS security services (IAM, GuardDuty, CloudTrail, Security Hub), Docker, GitHub Actions CI/CD pipelines, Ansible, and Python.
+
+I'm particularly interested in the ${role} position at ${co}. My recent projects include building an AI-driven threat detection system on AWS Lambda and a full DevSecOps pipeline with automated security scanning — skills I believe directly align with your team's work.
+
+I'd love to discuss how I can contribute. Would you be open to a brief call this week?
+
+${P.sig||'Best regards,
+Abhijith A
++91 7902260801
+linkedin.com/in/abhijith-a-9252a536a'}`;
+  return `SUBJECT: ${subj}
+BODY:
+${body}`;
 }
 function mkEP(t,etype,extra=''){
   const intern=t.type==='Internship'||etype.includes('Internship');
