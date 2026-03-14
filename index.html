@@ -1010,7 +1010,7 @@ function saveGmailModal(){CFG.gmailClientId=$('mg-cid').value.trim();if(!CFG.gma
 function gmailAuth(){
   if(!CFG.gmailClientId){toast('⚠️ Enter Client ID first','ter');return;}
   const scope='https://www.googleapis.com/auth/gmail.send';
-  const redir=window.location.origin||'http://localhost';
+  const redir='https://abhijith9744266-tech.github.io/reachout/';
   const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.gmailClientId}&redirect_uri=${encodeURIComponent(redir)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
   const pop=window.open(url,'gmailOAuth','width=500,height=600');
   const poll=setInterval(()=>{
@@ -1023,7 +1023,7 @@ function dashGmailAuth(){
   if(ds)ds.textContent='⏳ Opening Google sign-in...';
   if(btn)btn.disabled=true;
   const scope='https://www.googleapis.com/auth/gmail.send';
-  const redir=window.location.origin||'http://localhost';
+  const redir='https://abhijith9744266-tech.github.io/reachout/';
   const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.gmailClientId}&redirect_uri=${encodeURIComponent(redir)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
   const pop=window.open(url,'gmailOAuth','width=500,height=620,left=400,top=100');
   if(!pop){toast('⚠️ Popup blocked! Allow popups for this page in Chrome.','ter',7000);if(ds)ds.textContent='❌ Popup blocked — allow popups in Chrome and try again';if(btn)btn.disabled=false;return;}
