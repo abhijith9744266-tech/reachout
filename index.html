@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReachOut v3 — Abhijith</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root{
+  --bg:#05050f;--surface:#0a0a1a;--card:#0e0e20;--card2:#11112a;
+  --border:#181830;--border2:#20203a;
+  --accent:#6c47ff;--ag:rgba(108,71,255,.3);
+  --pink:#ff4d8d;--pg:rgba(255,77,141,.25);
+  --green:#00e5a0;--gg:rgba(0,229,160,.2);
+  --yellow:#ffb547;--yg:rgba(255,181,71,.2);
+  --blue:#4d9fff;--blg:rgba(77,159,255,.2);
+  --text:#e0e0f5;--t2:#8888aa;--t3:#44445a;
+  --sw:228px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sb{width:var(--sw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:2px;padding:20px 10px;position:fixed;height:100vh;overflow-y:auto;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:0 0 16px var(--ag)}
+.logo-text{font-size:1.1rem;font-weight:700;letter-spacing:-.2px}
+.mpill{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:8px;font-size:.7rem;font-weight:600;margin:4px 0 8px;cursor:pointer}
+.mpill.on{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.22);color:var(--green)}
+.mpill.off{background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.18);color:var(--yellow)}
+.mpill-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sec{font-size:.58rem;letter-spacing:1.3px;color:var(--t3);padding:10px 10px 5px;text-transform:uppercase;margin-top:2px}
+.nb{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.77rem;font-weight:500;color:var(--t3);border:1px solid transparent;transition:all .15s;background:none;width:100%;text-align:left}
+.nb:hover{color:var(--t2);background:rgba(108,71,255,.07)}
+.nb.active{color:var(--accent);background:rgba(108,71,255,.13);border-color:rgba(108,71,255,.2)}
+.nb .ic{width:16px;text-align:center;flex-shrink:0;font-size:.85rem}
+.nb .bdge{margin-left:auto;background:var(--pink);color:#fff;border-radius:20px;padding:1px 7px;font-size:.58rem;font-family:'JetBrains Mono',monospace}
+.sb-foot{margin-top:auto;border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.sbs{display:flex;justify-content:space-between;padding:3px 10px;font-size:.67rem;color:var(--t3)}
+.sbs b{color:var(--t2);font-weight:600}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:28px 34px;display:flex;flex-direction:column;gap:20px}
+.page{display:none;flex-direction:column;gap:16px;animation:fi .2s ease}
+.page.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pt{font-size:1.7rem;font-weight:700;letter-spacing:-.5px}
+.ps{color:var(--t3);font-size:.75rem;margin-top:3px}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.ct{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ct .sub{margin-left:auto;font-size:.65rem;color:var(--t3);text-transform:none;letter-spacing:0;font-weight:400}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:17px 15px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;cursor:default}
+.stat:hover{transform:translateY(-2px)}
+.stat-shine{position:absolute;top:-15px;right:-15px;width:60px;height:60px;border-radius:50%;opacity:.12;filter:blur(18px)}
+.stat-n{font-size:1.9rem;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;letter-spacing:-1px}
+.stat-l{font-size:.63rem;color:var(--t3);margin-top:5px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.stat-sub{font-size:.62rem;margin-top:7px}
+.stat-line{position:absolute;bottom:0;left:0;right:0;height:2px}
+
+/* BANNER */
+.banner{border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:11px;font-size:.74rem}
+.banner.ok{background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);color:var(--green)}
+.banner.warn{background:rgba(255,181,71,.07);border:1px solid rgba(255,181,71,.17);color:var(--yellow)}
+.banner.info{background:rgba(108,71,255,.07);border:1px solid rgba(108,71,255,.2);color:#a08eff}
+.banner-txt{flex:1;line-height:1.55}
+.banner-txt b{color:inherit}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,rgba(108,71,255,.12),rgba(255,77,141,.06));border:1px solid rgba(108,71,255,.28);border-radius:14px;padding:20px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(108,71,255,.12),transparent 70%)}
+.hero-em{font-size:1.9rem;flex-shrink:0}
+.hero-txt{flex:1}
+.hero-h{font-size:.97rem;font-weight:700;margin-bottom:3px}
+.hero-s{font-size:.72rem;color:var(--t2);line-height:1.5}
+.hero-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:4px}
+label{font-size:.62rem;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;font-weight:600}
+input,select,textarea{background:rgba(255,255,255,.028);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.79rem;padding:8px 11px;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:rgba(108,71,255,.04)}
+textarea{resize:vertical;min-height:78px}
+select option{background:var(--surface)}
+
+/* BUTTONS */
+.btn{padding:8px 15px;border-radius:8px;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1px;transition:all .16s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.bp{background:var(--accent);color:#fff;box-shadow:0 2px 14px rgba(108,71,255,.3)}
+.bp:hover{background:#7c5fff;box-shadow:0 4px 20px rgba(108,71,255,.5);transform:translateY(-1px)}
+.bs{background:transparent;color:var(--t2);border:1px solid var(--border2)}
+.bs:hover{border-color:var(--accent);color:var(--accent)}
+.bg2{background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.22)}
+.bg2:hover{background:rgba(0,229,160,.18);box-shadow:0 2px 12px var(--gg)}
+.br{background:rgba(255,77,141,.08);color:var(--pink);border:1px solid rgba(255,77,141,.2)}
+.br:hover{background:rgba(255,77,141,.15)}
+.bli{background:rgba(77,159,255,.1);color:var(--blue);border:1px solid rgba(77,159,255,.22)}
+.bli:hover{background:rgba(77,159,255,.18);box-shadow:0 2px 12px var(--blg)}
+.bya{background:rgba(255,181,71,.1);color:var(--yellow);border:1px solid rgba(255,181,71,.22)}
+.bya:hover{background:rgba(255,181,71,.18)}
+.btn-sm{padding:5px 10px;font-size:.68rem}
+.btn-lg{padding:10px 20px;font-size:.8rem}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.73rem}
+th{color:var(--t3);font-weight:600;letter-spacing:.7px;text-transform:uppercase;padding:7px 11px;text-align:left;border-bottom:1px solid var(--border);font-size:.61rem}
+td{padding:9px 11px;border-bottom:1px solid rgba(24,24,48,.7);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(108,71,255,.025)}
+.bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.61rem;font-weight:600;letter-spacing:.2px}
+.by{background:rgba(255,181,71,.12);color:var(--yellow);border:1px solid rgba(255,181,71,.24)}
+.bgreen{background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.2)}
+.bpurple{background:rgba(108,71,255,.12);color:#a08eff;border:1px solid rgba(108,71,255,.22)}
+.bblue{background:rgba(77,159,255,.1);color:var(--blue);border:1px solid rgba(77,159,255,.2)}
+.bred{background:rgba(255,77,141,.1);color:var(--pink);border:1px solid rgba(255,77,141,.2)}
+
+/* AI BOX */
+.aib{background:rgba(0,0,0,.28);border:1px solid var(--border2);border-radius:8px;padding:13px;font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.8;color:var(--text);white-space:pre-wrap;min-height:88px}
+.aib.loading{color:var(--t2)}.aib.loading::after{content:'▋';color:var(--accent);animation:blink .6s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* PROGRESS */
+.prog{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:10px}
+.pf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--pink));transition:width .5s ease}
+
+/* QUEUE */
+.qi{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:9px;padding:11px 15px;display:flex;align-items:center;gap:11px;transition:all .2s}
+.qi.sending{border-color:var(--accent);background:rgba(108,71,255,.07);box-shadow:0 0 14px rgba(108,71,255,.08)}
+.qi.done-e{border-color:var(--green);background:rgba(0,229,160,.04)}
+.qi.done-l{border-color:var(--blue);background:rgba(77,159,255,.04)}
+.qi.err{border-color:var(--pink);background:rgba(255,77,141,.04)}
+.qi-n{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--t3);width:20px;flex-shrink:0}
+.qi-name{font-weight:600;font-size:.8rem}
+.qi-role{font-size:.68rem;color:var(--t2);margin-top:2px}
+.qi-st{margin-left:auto;flex-shrink:0}
+.spin{display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* TABS */
+.tabs{display:flex;gap:3px;background:rgba(0,0,0,.3);border-radius:8px;padding:3px;border:1px solid var(--border)}
+.tab{padding:6px 13px;border-radius:6px;border:none;font-family:'Space Grotesk',sans-serif;font-size:.73rem;font-weight:500;cursor:pointer;transition:all .14s;background:transparent;color:var(--t3);flex:1}
+.tab.active{background:var(--card2);color:var(--text);box-shadow:0 1px 5px rgba(0,0,0,.4)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:24px;width:480px;max-width:96vw;max-height:90vh;overflow-y:auto}
+.modal-h{font-size:1rem;font-weight:700;margin-bottom:5px}
+.modal-s{font-size:.73rem;color:var(--t2);line-height:1.65;margin-bottom:16px}
+.code-b{background:rgba(0,0,0,.4);border:1px solid var(--border2);border-radius:7px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t2);line-height:1.75;margin:8px 0}
+.modal-btns{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+/* FEED */
+.fi{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(24,24,48,.6)}
+.fi:last-child{border-bottom:none}
+.fi-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.fi-text{font-size:.74rem;flex:1;color:var(--t2)}
+.fi-time{font-size:.64rem;color:var(--t3);font-family:'JetBrains Mono',monospace}
+
+/* LI BOX */
+.li-box{background:rgba(77,159,255,.04);border:1px solid rgba(77,159,255,.14);border-radius:9px;padding:14px}
+
+/* TOGGLE */
+.tog{position:relative;display:inline-block;width:34px;height:18px;cursor:pointer;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-track{position:absolute;inset:0;border-radius:9px;background:var(--border2);transition:.2s}
+.tog input:checked+.tog-track{background:var(--green)}
+.tog-thumb{position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s;pointer-events:none}
+.tog input:checked~.tog-thumb{left:19px}
+
+/* TOASTS */
+#toasts{position:fixed;bottom:16px;right:16px;display:flex;flex-direction:column;gap:7px;z-index:999}
+.toast{background:var(--surface);border:1px solid var(--border2);border-radius:9px;padding:10px 13px;font-size:.72rem;font-weight:500;display:flex;align-items:center;gap:8px;max-width:270px;animation:ti .2s ease;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+@keyframes ti{from{transform:translateX(65px);opacity:0}to{transform:none;opacity:1}}
+.tok{border-color:rgba(0,229,160,.32)}.ter{border-color:rgba(255,77,141,.32)}.tin{border-color:rgba(108,71,255,.32)}.tli{border-color:rgba(77,159,255,.32)}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sched-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sched-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.sched-card.active{border-color:rgba(0,229,160,.35);background:rgba(0,229,160,.05)}
+.sched-card.warn{border-color:rgba(255,181,71,.35);background:rgba(255,181,71,.05)}
+.sched-n{font-size:1.55rem;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.sched-l{font-size:.6rem;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.sched-sub{font-size:.64rem;margin-top:5px}
+.tl-item{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid rgba(24,24,48,.6)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-title{font-size:.77rem;font-weight:600;margin-bottom:2px}
+.tl-sub{font-size:.68rem;color:var(--t2);line-height:1.5}
+.tl-time{font-size:.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:3px;white-space:nowrap}
+.step-row{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:.67rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-txt{flex:1;font-size:.74rem;color:var(--t2);line-height:1.65}
+.step-txt a{color:var(--accent)}
+.step-txt code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.68rem}
+.copy-box{background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:7px;padding:10px 13px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t2);line-height:1.7;position:relative;margin:6px 0}
+.copy-btn-inline{position:absolute;top:7px;right:7px;background:rgba(108,71,255,.15);border:1px solid rgba(108,71,255,.25);color:var(--accent);border-radius:5px;padding:3px 9px;font-size:.62rem;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.gas-setup{display:none;flex-direction:column;gap:12px}
+.gas-setup.open{display:flex}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+
+<!-- EMAILJS MODAL -->
+<div id="ejsModal" class="modal-bg" style="display:none">
+<div class="modal">
+  <div class="modal-h">📨 EmailJS — Free Auto-Send Setup</div>
+  <div class="modal-s">Free 200 emails/month. Takes 3 minutes. Your emails send directly from Gmail — zero clicking.</div>
+  <div class="code-b">
+    <b style="color:var(--green)">1.</b> <a href="https://emailjs.com" target="_blank" style="color:var(--accent)">emailjs.com</a> → Sign up (free)<br>
+    <b style="color:var(--green)">2.</b> Email Services → Add Gmail → Connect → copy <b>Service ID</b><br>
+    <b style="color:var(--green)">3.</b> Email Templates → Create → paste these variables:<br>
+    &nbsp;&nbsp;To: <span style="color:var(--yellow)">{{to_email}}</span> | Subject: <span style="color:var(--yellow)">{{subject}}</span> | Body: <span style="color:var(--yellow)">{{message}}</span><br>
+    &nbsp;&nbsp;→ copy <b>Template ID</b><br>
+    <b style="color:var(--green)">4.</b> Account → API Keys → copy <b>Public Key</b>
+  </div>
+  <div class="g2" style="gap:10px;margin-top:8px">
+    <div class="fg"><label>Service ID</label><input id="me-sid" placeholder="service_xxxxxxx"></div>
+    <div class="fg"><label>Template ID</label><input id="me-tid" placeholder="template_xxxxxxx"></div>
+    <div class="fg full"><label>Public Key</label><input id="me-key" placeholder="your_public_key_here"></div>
+  </div>
+  <div class="modal-btns">
+    <button class="btn bs" onclick="closeModal('ejsModal')">Cancel</button>
+    <button class="btn bp" onclick="saveEJSModal()">⚡ Save & Activate Auto-Send</button>
+  </div>
+</div>
+</div>
+
+<!-- GMAIL MODAL -->
+<div id="gmailModal" class="modal-bg" style="display:none">
+<div class="modal">
+  <div class="modal-h">🔑 Gmail API — Zero-Click Auto-Send</div>
+  <div class="modal-s">Sends directly from Google's servers. One-time OAuth setup. No tabs, no clicking ever.</div>
+  <div class="code-b">
+    <b style="color:var(--green)">1.</b> <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent)">console.cloud.google.com</a> → New Project<br>
+    <b style="color:var(--green)">2.</b> APIs &amp; Services → Enable APIs → search Gmail API → Enable<br>
+    <b style="color:var(--green)">3.</b> Credentials → Create → OAuth 2.0 Client ID → Web application<br>
+    <b style="color:var(--green)">4.</b> Authorized redirect URIs → add: <span style="color:var(--yellow)">http://localhost</span><br>
+    <b style="color:var(--green)">5.</b> Copy Client ID → paste below → Authorize
+  </div>
+  <div class="fg" style="margin:14px 0 8px">
+    <label>OAuth Client ID</label>
+    <input id="mg-cid" placeholder="xxxxxxxxxx.apps.googleusercontent.com">
+  </div>
+  <div class="modal-btns">
+    <button class="btn bs" onclick="closeModal('gmailModal')">Cancel</button>
+    <button class="btn bp" onclick="saveGmailModal()">🔐 Save & Authorize Gmail</button>
+  </div>
+</div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="logo">
+    <div class="logo-icon">🚀</div>
+    <div class="logo-text">ReachOut</div>
+  </div>
+  <div id="mpill" class="mpill off" onclick="nav('settings',document.querySelectorAll('.nb')[6])">
+    <div class="mpill-dot"></div>
+    <span id="mpill-txt">Manual Mode — click to setup</span>
+  </div>
+  <div class="sec">Outreach</div>
+  <button class="nb active" onclick="nav('dashboard',this)"><span class="ic">▦</span> Dashboard</button>
+  <button class="nb" onclick="nav('autorun',this)"><span class="ic">⚡</span> Auto Run <span id="nb-pend" class="bdge" style="display:none">0</span></button>
+  <button class="nb" onclick="nav('compose',this)"><span class="ic">✍</span> Compose</button>
+  <button class="nb" onclick="nav('linkedin',this)"><span class="ic">💼</span> LinkedIn</button>
+  <button class="nb" onclick="nav('automation',this)"><span class="ic">🗓</span> Daily Auto <span id="nb-sched" class="bdge" style="background:var(--green);display:none">ON</span></button>
+  <div class="sec">Manage</div>
+  <button class="nb" onclick="nav('targets',this)"><span class="ic">🎯</span> Targets</button>
+  <button class="nb" onclick="nav('tracker',this)"><span class="ic">📊</span> Tracker</button>
+  <button class="nb" onclick="nav('settings',this)"><span class="ic">⚙</span> Settings</button>
+  <button class="nb" onclick="nav('profile',this)"><span class="ic">👤</span> Profile</button>
+  <div class="sb-foot">
+    <div class="sbs"><span>Targets</span><b id="sb1">0</b></div>
+    <div class="sbs"><span>Emails Sent</span><b id="sb2">0</b></div>
+    <div class="sbs"><span>LinkedIn</span><b id="sb3">0</b></div>
+    <div class="sbs"><span>Responses</span><b id="sb4">0</b></div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="ph">
+    <div>
+      <div class="pt">Dashboard 👋</div>
+      <div class="ps" id="dash-greet">Your job hunt command center</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn bp btn-lg" onclick="nav('autorun',document.querySelectorAll('.nb')[1])">⚡ Auto Run</button>
+      <button class="btn bg2 btn-lg" onclick="nav('automation',document.querySelectorAll('.nb')[4])">🗓 Daily Schedule</button>
+    </div>
+  </div>
+
+  <!-- 5 STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-shine" style="background:var(--accent)"></div>
+      <div class="stat-n" style="color:var(--accent)" id="d1">0</div>
+      <div class="stat-l">Targets</div>
+      <div class="stat-sub" style="color:var(--t3)" id="d1-s">companies</div>
+      <div class="stat-line" style="background:linear-gradient(90deg,var(--accent),transparent)"></div>
+    </div>
+    <div class="stat">
+      <div class="stat-shine" style="background:var(--green)"></div>
+      <div class="stat-n" style="color:var(--green)" id="d2">0</div>
+      <div class="stat-l">Emails Sent</div>
+      <div class="stat-sub" style="color:var(--t3)" id="d2-s">total</div>
+      <div class="stat-line" style="background:linear-gradient(90deg,var(--green),transparent)"></div>
+    </div>
+    <div class="stat">
+      <div class="stat-shine" style="background:var(--blue)"></div>
+      <div class="stat-n" style="color:var(--blue)" id="d5">0</div>
+      <div class="stat-l">LinkedIn</div>
+      <div class="stat-sub" style="color:var(--t3)">connections</div>
+      <div class="stat-line" style="background:linear-gradient(90deg,var(--blue),transparent)"></div>
+    </div>
+    <div class="stat">
+      <div class="stat-shine" style="background:var(--yellow)"></div>
+      <div class="stat-n" style="color:var(--yellow)" id="d3">0</div>
+      <div class="stat-l">Responses</div>
+      <div class="stat-sub" style="color:var(--t3)" id="d3-r">0% rate</div>
+      <div class="stat-line" style="background:linear-gradient(90deg,var(--yellow),transparent)"></div>
+    </div>
+    <div class="stat">
+      <div class="stat-shine" style="background:var(--pink)"></div>
+      <div class="stat-n" style="color:var(--pink)" id="d4">0</div>
+      <div class="stat-l">Pending</div>
+      <div class="stat-sub" style="color:var(--t3)">to send</div>
+      <div class="stat-line" style="background:linear-gradient(90deg,var(--pink),transparent)"></div>
+    </div>
+  </div>
+
+  <!-- GMAIL SETUP CARD — RIGHT ON DASHBOARD -->
+  <div class="card" id="dash-gmail-card">
+    <div class="ct">🔑 Gmail API Setup
+      <span id="dash-gmail-pill" class="bdg by" style="margin-left:6px;font-size:.62rem">NOT AUTHORIZED</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px">
+        <div style="font-size:.78rem;color:var(--t2);line-height:1.7;margin-bottom:10px">
+          Your Client ID is <b style="color:var(--green)">pre-loaded ✅</b>. Just click <b>Authorize Gmail</b> below — sign in with your Google account and allow permissions. One click, done forever.
+        </div>
+        <div style="font-size:.68rem;color:var(--t3);font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.25);padding:7px 11px;border-radius:6px;margin-bottom:12px;word-break:break-all">
+          414244463818-qi7vudvj5i0s01clem5d3iqo0h4srcf3.apps.googleusercontent.com
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="btn bp btn-lg" id="dash-auth-btn" onclick="dashGmailAuth()">🔐 Authorize Gmail</button>
+          <span id="dash-gmail-status" style="font-size:.72rem;color:var(--t3)">Click to connect your Gmail account</span>
+        </div>
+      </div>
+      <div style="flex-shrink:0;text-align:center;padding:14px 20px;background:rgba(108,71,255,.07);border:1px solid rgba(108,71,255,.15);border-radius:10px">
+        <div style="font-size:2rem;margin-bottom:4px">📧</div>
+        <div style="font-size:.68rem;color:var(--t2);font-weight:600">After authorizing</div>
+        <div style="font-size:.63rem;color:var(--t3);margin-top:3px">emails send automatically<br>zero clicking needed</div>
+      </div>
+    </div>
+    <!-- Steps hint -->
+    <div id="dash-gmail-steps" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:.68rem;color:var(--t3);line-height:1.9">
+        <span style="color:var(--green)">①</span> A Google popup will open &nbsp;→&nbsp;
+        <span style="color:var(--green)">②</span> Sign in with <b style="color:var(--text)">abhijith9744266@gmail.com</b> &nbsp;→&nbsp;
+        <span style="color:var(--green)">③</span> If you see "App not verified" → click <b style="color:var(--text)">Advanced → Go to ReachOut</b> &nbsp;→&nbsp;
+        <span style="color:var(--green)">④</span> Click <b style="color:var(--text)">Allow</b> ✅
+      </div>
+    </div>
+  </div>
+
+  <!-- EMAIL SEND STATUS BANNER -->
+  <div id="dash-banner" class="banner warn" style="display:none">
+    <div style="font-size:1rem">⚠️</div>
+    <div class="banner-txt"><b>No auto-send connected.</b> Set up EmailJS (free, 3 min) in Settings to send emails automatically.</div>
+    <button class="btn bya btn-sm" onclick="nav('settings',document.querySelectorAll('.nb')[7])">Setup →</button>
+  </div>
+
+  <!-- DAILY AUTOMATION STATUS CARD -->
+  <div class="card" id="dash-auto-card">
+    <div class="ct">🗓 Daily Automation Status
+      <span id="dash-auto-status-pill" class="bdg by" style="margin-left:6px;font-size:.62rem">NOT SET UP</span>
+      <span class="sub" style="margin-left:auto">
+        <button class="btn bg2 btn-sm" onclick="nav('automation',document.querySelectorAll('.nb')[4])">Manage →</button>
+      </span>
+    </div>
+    <div class="sched-row">
+      <div class="sched-card" id="sc-emails">
+        <div class="sched-n" style="color:var(--accent)" id="sc-e-n">3</div>
+        <div class="sched-l">Emails / Day</div>
+        <div class="sched-sub" style="color:var(--t3)">auto-sent at 9am</div>
+      </div>
+      <div class="sched-card" id="sc-fu">
+        <div class="sched-n" style="color:var(--yellow)" id="sc-fu-n">5d</div>
+        <div class="sched-l">Follow-up After</div>
+        <div class="sched-sub" style="color:var(--t3)">no reply = auto follow-up</div>
+      </div>
+      <div class="sched-card" id="sc-li">
+        <div class="sched-n" style="color:var(--blue)" id="sc-li-n">3</div>
+        <div class="sched-l">LinkedIn / Day</div>
+        <div class="sched-sub" style="color:var(--t3)">profiles in daily email</div>
+      </div>
+      <div class="sched-card" id="sc-gas">
+        <div class="sched-n" style="color:var(--green)" id="sc-gas-n">—</div>
+        <div class="sched-l">Next Run</div>
+        <div class="sched-sub" id="sc-gas-sub" style="color:var(--t3)">setup needed</div>
+      </div>
+    </div>
+    <!-- Today's action items -->
+    <div id="dash-today" style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:.7rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Today's Action Items</div>
+      <div id="today-items" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+  </div>
+
+  <!-- HERO QUICK ACTIONS -->
+  <div class="hero">
+    <div class="hero-em">🤖</div>
+    <div class="hero-txt">
+      <div class="hero-h"><span id="hero-n">0</span> targets pending outreach</div>
+      <div class="hero-s" id="hero-s">Set up Google Apps Script for daily automation — emails send themselves every morning at 9am.</div>
+      <div style="font-size:.69rem;color:var(--t3);margin-top:4px" id="dash-verified"></div>
+    </div>
+    <div class="hero-btns">
+      <button class="btn bp" onclick="nav('autorun',document.querySelectorAll('.nb')[1])">⚡ Email Run</button>
+      <button class="btn bli" onclick="nav('linkedin',document.querySelectorAll('.nb')[3])">💼 LinkedIn</button>
+      <button class="btn bg2" onclick="nav('automation',document.querySelectorAll('.nb')[4])">🗓 Auto Setup</button>
+    </div>
+  </div>
+
+  <!-- RECENT ACTIVITY -->
+  <div class="g2">
+    <div class="card">
+      <div class="ct">📧 Recent Emails <span class="sub" id="rc-e"></span></div>
+      <div id="drec-e"><div style="color:var(--t3);font-size:.74rem;text-align:center;padding:18px">No emails sent yet</div></div>
+    </div>
+    <div class="card">
+      <div class="ct">💼 Recent LinkedIn <span class="sub" id="rc-l"></span></div>
+      <div id="drec-l"><div style="color:var(--t3);font-size:.74rem;text-align:center;padding:18px">No connections yet</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTO RUN -->
+<div class="page" id="page-autorun">
+  <div class="ph">
+    <div><div class="pt">⚡ Auto Run</div><div class="ps">Generates AI emails &amp; sends them — fully automatic, no button clicking</div></div>
+  </div>
+
+  <div id="ar-banner" class="banner warn">
+    <div style="font-size:1rem">⚠️</div>
+    <div class="banner-txt" id="ar-banner-txt">No auto-send configured — Gmail tabs will open. Go to Settings for true automation.</div>
+    <button class="btn bs btn-sm" onclick="nav('settings',document.querySelectorAll('.nb')[6])">Settings →</button>
+  </div>
+
+  <div class="card">
+    <div class="ct">⚙️ Configuration</div>
+    <div class="g3">
+      <div class="fg">
+        <label>Send Mode</label>
+        <div class="tabs" id="ar-mode-tabs">
+          <button class="tab active" onclick="setARMode('email',this)">📧 Email</button>
+          <button class="tab" onclick="setARMode('li',this)">💼 LinkedIn</button>
+          <button class="tab" onclick="setARMode('both',this)">🔥 Both</button>
+        </div>
+      </div>
+      <div class="fg"><label>Email Type</label>
+        <select id="ar-type">
+          <option>Cold Email</option>
+          <option>Internship Application</option>
+          <option>Mixed — auto detect</option>
+        </select>
+      </div>
+      <div class="fg"><label>Filter Targets</label>
+        <select id="ar-filter">
+          <option value="all">All pending</option>
+          <option value="intern">Internships only</option>
+          <option value="ft">Full-time only</option>
+        </select>
+      </div>
+      <div class="fg"><label>Delay Between Each</label>
+        <select id="ar-delay">
+          <option value="2000">2s — Fast</option>
+          <option value="4000" selected>4s — Normal</option>
+          <option value="7000">7s — Safe</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Also open LinkedIn</label>
+        <div style="display:flex;align-items:center;gap:9px;padding-top:9px">
+          <label class="tog"><input type="checkbox" id="ar-also-li"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+          <span style="font-size:.72rem;color:var(--t2)">After each email</span>
+        </div>
+      </div>
+      <div class="fg" style="align-self:end">
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn bp btn-lg" id="ar-start" onclick="startAuto()">🚀 Start</button>
+          <button class="btn br" id="ar-stop" onclick="stopAuto()" style="display:none">⏹ Stop</button>
+        </div>
+        <div id="ar-status" style="font-size:.69rem;color:var(--t3);margin-top:6px"></div>
+      </div>
+    </div>
+    <div class="prog" id="ar-pw" style="display:none"><div class="pf" id="ar-pf" style="width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📬 Queue <span class="sub" id="ar-qc"></span></div>
+    <div id="ar-queue" style="display:flex;flex-direction:column;gap:6px">
+      <div style="color:var(--t3);font-size:.74rem;text-align:center;padding:20px">Click Start to begin</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPOSE -->
+<div class="page" id="page-compose">
+  <div class="pt">Compose ✍</div>
+  <div class="ps">Generate a personalized email and send it instantly</div>
+  <div class="card">
+    <div class="ct">⚙️ Setup</div>
+    <div class="g2">
+      <div class="fg"><label>Target</label><select id="c-target"><option value="">— Choose —</option></select></div>
+      <div class="fg"><label>Type</label><select id="c-type"><option>Cold Email</option><option>Internship Application Email</option><option>Follow-up Email</option></select></div>
+      <div class="fg"><label>Tone</label><select id="c-tone"><option>Professional</option><option>Friendly &amp; Enthusiastic</option><option>Concise &amp; Direct</option></select></div>
+      <div class="fg"><label>Extra note (optional)</label><input id="c-note" placeholder="e.g. mention AI security focus"></div>
+    </div>
+    <div style="margin-top:13px"><button class="btn bp" onclick="genSingle()">✨ Generate Email</button></div>
+  </div>
+  <div id="c-result" style="display:none;display:flex;flex-direction:column;gap:12px">
+    <div class="card">
+      <div class="ct">📧 Email <span id="c-mbadge" class="bdg by" style="margin-left:4px;font-size:.62rem"></span></div>
+      <div class="fg" style="margin-bottom:9px"><label>Subject</label><input id="c-subj"></div>
+      <div class="fg"><label>Body — click to edit</label><div class="aib" id="c-body" contenteditable="true"></div></div>
+      <div style="margin-top:11px;display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn bg2" id="c-send-btn" onclick="sendEmail()">📧 Send</button>
+        <button class="btn bs" onclick="copyMsg()">📋 Copy</button>
+        <button class="btn bs btn-sm" onclick="markSentM()">✅ Mark Sent</button>
+      </div>
+      <div id="c-sts" style="margin-top:7px;font-size:.7rem;color:var(--t3)"></div>
+    </div>
+    <div class="card" id="c-li-card">
+      <div class="ct">💼 LinkedIn Note</div>
+      <div class="li-box">
+        <div class="aib" id="c-li-body" contenteditable="true" style="min-height:55px;font-size:.74rem"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px">
+          <span id="c-li-cc" style="font-size:.64rem;color:var(--t3);font-family:'JetBrains Mono',monospace">0/290</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn bli btn-sm" onclick="openLIcopy('c-li-body',null,'curTid')">💼 Open + Copy</button>
+            <button class="btn bs btn-sm" onclick="markLIFor(curTid)">✅ Mark LI</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="page" id="page-linkedin">
+  <div class="ph">
+    <div><div class="pt">LinkedIn 💼</div><div class="ps">Generate personalized notes &amp; run bulk LinkedIn outreach</div></div>
+  </div>
+  <div class="banner info">
+    <div>💡</div>
+    <div class="banner-txt"><b>How it works:</b> AI generates a 290-char note → clipboard → LinkedIn profile opens → you paste &amp; Connect. ~10 seconds each.</div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">✨ Generate Note</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="fg"><label>Target</label><select id="li-target"><option value="">— Choose —</option></select></div>
+        <div class="fg"><label>Style</label><select id="li-style"><option>Genuine &amp; Personal</option><option>Concise &amp; Direct</option><option>Enthusiastic</option></select></div>
+        <div class="fg"><label>Extra context</label><input id="li-extra" placeholder="e.g. saw their DevSecOps post"></div>
+        <button class="btn bp" onclick="genLI()">✨ Generate</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">💬 Note</div>
+      <div class="li-box">
+        <div class="aib" id="li-msg" contenteditable="true" style="min-height:72px;font-size:.74rem">Generate a note to see it here...</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px">
+          <span id="li-cc" style="font-size:.64rem;color:var(--t3);font-family:'JetBrains Mono',monospace"></span>
+          <div style="display:flex;gap:6px">
+            <button class="btn bs btn-sm" onclick="cpLI()">📋 Copy</button>
+            <button class="btn bli" onclick="openLIcopy('li-msg',null,'curLiTid')">💼 Open + Copy</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn bs btn-sm" onclick="markLISent()" style="margin-top:10px">✅ Mark as Connected</button>
+    </div>
+  </div>
+
+  <!-- BULK RUN -->
+  <div class="card">
+    <div class="ct">🚀 LinkedIn Bulk Run</div>
+    <div style="font-size:.73rem;color:var(--t2);line-height:1.65;margin-bottom:13px">Generates note → copies to clipboard → opens profile. You paste + Connect in each tab.</div>
+    <div class="g3" style="margin-bottom:12px">
+      <div class="fg"><label>Filter</label><select id="li-filter"><option value="all">All targets</option><option value="intern">Internships</option><option value="ft">Full-time</option><option value="emailed">Emailed only</option></select></div>
+      <div class="fg"><label>Delay</label><select id="li-delay"><option value="4000">4s</option><option value="7000" selected>7s</option><option value="12000">12s</option></select></div>
+      <div class="fg" style="align-self:end">
+        <div style="display:flex;gap:8px">
+          <button class="btn bli btn-lg" id="li-start" onclick="startLI()">💼 Start LI Run</button>
+          <button class="btn br" id="li-stop" onclick="stopLI()" style="display:none">⏹ Stop</button>
+        </div>
+        <div id="li-status" style="font-size:.69rem;color:var(--t3);margin-top:6px"></div>
+      </div>
+    </div>
+    <div class="prog" id="li-pw" style="display:none"><div class="pf" id="li-pf" style="width:0%"></div></div>
+  </div>
+  <div class="card" id="li-qcard" style="display:none">
+    <div class="ct">📋 LI Queue <span class="sub" id="li-qc"></span></div>
+    <div id="li-queue" style="display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<!-- DAILY AUTOMATION -->
+<div class="page" id="page-automation">
+  <div class="ph">
+    <div>
+      <div class="pt">🗓 Daily Automation</div>
+      <div class="ps">Google Apps Script runs every day at 9am — sends emails, follow-ups, LinkedIn reminders automatically</div>
+    </div>
+    <span id="auto-live-pill" style="display:none;align-items:center;gap:6px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.22);color:var(--green);border-radius:8px;padding:6px 12px;font-size:.7rem;font-weight:600">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite"></span>
+      LIVE — Running daily
+    </span>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="banner info">
+    <div>💡</div>
+    <div class="banner-txt">
+      <b>How it works:</b> Paste the Google Apps Script into Google's free script editor → click Run once → it sends emails + follow-ups + LinkedIn reminders every morning at 9am automatically. Your laptop can be off.
+    </div>
+  </div>
+
+  <!-- SCHEDULE CARDS -->
+  <div class="card">
+    <div class="ct">⏰ Daily Schedule</div>
+    <div class="sched-row">
+      <div class="sched-card active">
+        <div class="sched-n" style="color:var(--green)">9<span style="font-size:1rem">am</span></div>
+        <div class="sched-l">Runs Every Day</div>
+        <div class="sched-sub" style="color:var(--green)">Google's servers</div>
+      </div>
+      <div class="sched-card">
+        <div class="sched-n" style="color:var(--accent)" id="cfg-epd">3</div>
+        <div class="sched-l">Emails Per Day</div>
+        <div class="sched-sub" style="color:var(--t3)">safe spam limit</div>
+      </div>
+      <div class="sched-card">
+        <div class="sched-n" style="color:var(--yellow)" id="cfg-fud">5<span style="font-size:.9rem">d</span></div>
+        <div class="sched-l">Follow-up Delay</div>
+        <div class="sched-sub" style="color:var(--t3)">after no reply</div>
+      </div>
+      <div class="sched-card">
+        <div class="sched-n" style="color:var(--blue)">2</div>
+        <div class="sched-l">Max Follow-ups</div>
+        <div class="sched-sub" style="color:var(--t3)">per company</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT HAPPENS DAILY TIMELINE -->
+  <div class="card">
+    <div class="ct">📅 What Happens Every Day</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div><div class="tl-dot" style="background:var(--accent)"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">9:00 AM — Script wakes up on Google's servers</div>
+          <div class="tl-sub">Checks your target list, finds pending companies, generates personalized email for each</div>
+        </div>
+        <div class="tl-time">09:00</div>
+      </div>
+      <div class="tl-item">
+        <div><div class="tl-dot" style="background:var(--green)"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Sends 3 cold emails automatically</div>
+          <div class="tl-sub">Directly from your Gmail — personalized per company. Only targets with verified emails get cold emails.</div>
+        </div>
+        <div class="tl-time">09:01</div>
+      </div>
+      <div class="tl-item">
+        <div><div class="tl-dot" style="background:var(--yellow)"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Sends follow-ups to companies that haven't replied</div>
+          <div class="tl-sub">Waits 5 days → sends follow-up 1. Waits 10 days → sends follow-up 2. Then stops.</div>
+        </div>
+        <div class="tl-time">09:02</div>
+      </div>
+      <div class="tl-item">
+        <div><div class="tl-dot" style="background:var(--blue)"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Checks Gmail for any replies from companies</div>
+          <div class="tl-sub">Scans your inbox for replies from target companies. Updates the Google Sheet automatically.</div>
+        </div>
+        <div class="tl-time">09:03</div>
+      </div>
+      <div class="tl-item">
+        <div><div class="tl-dot" style="background:var(--pink)"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Sends YOU a daily summary email</div>
+          <div class="tl-sub">What was sent, any replies received, 3 LinkedIn profiles to visit today, portal apply links — all in one email to your inbox.</div>
+        </div>
+        <div class="tl-time">09:04</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETUP WIZARD -->
+  <div class="card">
+    <div class="ct">🚀 Setup Guide — One Time, 10 Minutes
+      <button class="btn bs btn-sm" style="margin-left:auto" onclick="toggleSetup()">Show Steps ▾</button>
+    </div>
+    <div id="gas-steps" class="gas-setup">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-txt">Go to <a href="https://script.google.com" target="_blank">script.google.com</a> and click <b>New Project</b></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-txt">Delete everything in the editor. Download and open the script file, copy everything, paste it in.</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-txt">Click <b>Save</b> (Ctrl+S) → name it <code>ReachOut Automation</code></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-txt">At the top, change the function dropdown to <code>setupAutomation</code> → click <b>▶ Run</b></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-txt">Google asks for permissions → click <b>Review permissions</b> → choose your Gmail account → click <b>Allow</b></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">6</div>
+        <div class="step-txt">✅ Done! Check your inbox — you'll get the first daily report immediately. From tomorrow it runs at 9am every day.</div>
+      </div>
+      <div style="background:rgba(0,0,0,.25);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-top:4px">
+        <div style="font-size:.68rem;color:var(--t3);margin-bottom:8px">A Google Sheet called "ReachOut Tracker" will be created in your Google Drive — check it to see all sent emails and statuses.</div>
+        <a href="https://script.google.com" target="_blank" class="btn bp btn-sm">Open Google Apps Script →</a>
+      </div>
+    </div>
+    <!-- Download script button -->
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn bg2" onclick="downloadScript()">⬇ Download Automation Script</button>
+      <span style="font-size:.69rem;color:var(--t3)">Save to your PC, then paste into Google Apps Script editor</span>
+    </div>
+  </div>
+
+  <!-- STATUS TRACKER — manual update -->
+  <div class="card">
+    <div class="ct">✅ Mark Setup Complete</div>
+    <div style="font-size:.74rem;color:var(--t2);margin-bottom:12px;line-height:1.65">
+      Once you've run the setup in Google Apps Script, mark it here so the dashboard shows the correct status.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn bg2" onclick="markGASLive()">✅ Mark as Live</button>
+      <button class="btn br btn-sm" onclick="markGASOff()">⏹ Turn Off</button>
+      <span id="gas-status-txt" style="font-size:.71rem;color:var(--t3)">Status: Not set up</span>
+    </div>
+  </div>
+</div>
+
+<!-- TARGETS -->
+<div class="page" id="page-targets">
+  <div class="pt">Targets 🎯</div>
+  <div class="ps">25 pre-loaded — 15 full-time + 10 internships</div>
+  <div class="card">
+    <div class="ct">➕ Add Target</div>
+    <div class="g2">
+      <div class="fg"><label>Company</label><input id="t-co" placeholder="Google"></div>
+      <div class="fg"><label>Role</label><input id="t-rl" placeholder="Cloud Security Analyst"></div>
+      <div class="fg"><label>Email</label><input id="t-em" type="email" placeholder="hr@company.com"></div>
+      <div class="fg"><label>LinkedIn URL</label><input id="t-li" type="url" placeholder="https://linkedin.com/company/..."></div>
+      <div class="fg"><label>Type</label><select id="t-ty"><option>Job</option><option>Internship</option></select></div>
+      <div class="fg"><label>Notes</label><input id="t-no" placeholder="e.g. remote-friendly"></div>
+    </div>
+    <div style="margin-top:13px"><button class="btn bp" onclick="addTarget()">Add ＋</button></div>
+  </div>
+  <div class="banner info" style="margin-bottom:0">
+    <div>💡</div>
+    <div class="banner-txt">
+      <b>Smart strategy:</b> 
+      <span style="color:var(--green)">✅ Verified emails</span> = send cold email directly. 
+      <span style="color:var(--yellow)">⚠️ Unverified</span> = use with caution. 
+      <span style="color:var(--pink)">❌ No email</span> = click 🌐 Apply to use the official job portal, then connect on 💼 LinkedIn.
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">All Targets <span class="sub" id="t-cnt"></span></div>
+    <div class="tw"><table>
+      <thead><tr><th>Company</th><th>Role</th><th>Type</th><th>Email Status</th><th>Status</th><th>Portal</th><th>Actions</th></tr></thead>
+      <tbody id="t-body"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div class="page" id="page-tracker">
+  <div class="pt">Tracker 📊</div>
+  <div class="ps">Update statuses as recruiters respond</div>
+  <div class="card">
+    <div class="ct">All Applications</div>
+    <div class="tw"><table>
+      <thead><tr><th>Company</th><th>Role</th><th>Sent</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody id="tr-body"><tr><td colspan="5" style="color:var(--t3);text-align:center;padding:22px">No applications yet</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="pt">Settings ⚙️</div>
+  <div class="ps">Connect an email service to enable fully automatic sending</div>
+
+  <div class="card">
+    <div class="ct">⚡ Active Method</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button id="sm-gmail" class="btn bs" onclick="setMethod('gmail')">🔑 Gmail API</button>
+      <button id="sm-ejs" class="btn bs" onclick="setMethod('ejs')">📨 EmailJS</button>
+      <button id="sm-tab" class="btn bya" onclick="setMethod('tab')">📭 Gmail Tabs (manual)</button>
+    </div>
+    <div id="s-banner" class="banner warn">
+      <div>⚠️</div>
+      <div class="banner-txt">Currently using Gmail Tabs — you must click Send in each tab manually.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📨 EmailJS <span class="bdg bgreen" style="margin-left:4px">Recommended — Free</span></div>
+    <div style="font-size:.73rem;color:var(--t2);line-height:1.65;margin-bottom:13px">
+      Free 200 emails/month. Sends from your Gmail without tabs.<br>
+      <a href="https://emailjs.com" target="_blank" style="color:var(--accent)">emailjs.com</a> → Gmail service → Template (vars: <code style="background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px">{{to_email}} {{subject}} {{message}} {{from_name}}</code>) → copy keys
+    </div>
+    <div class="g2" style="gap:10px">
+      <div class="fg"><label>Service ID</label><input id="s-esid" placeholder="service_xxxxxxx"></div>
+      <div class="fg"><label>Template ID</label><input id="s-etid" placeholder="template_xxxxxxx"></div>
+      <div class="fg"><label>Public Key</label><input id="s-ekey" placeholder="your_public_key"></div>
+      <div class="fg" style="align-self:end;flex-direction:row;gap:6px">
+        <button class="btn bg2 btn-sm" onclick="saveEJS()">💾 Save</button>
+        <button class="btn bs btn-sm" onclick="testEJS()">🧪 Test</button>
+      </div>
+    </div>
+    <div id="ejs-st" style="margin-top:9px;font-size:.7rem;color:var(--t3)"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🔑 Gmail API</div>
+    <div style="font-size:.73rem;color:var(--t2);line-height:1.65;margin-bottom:13px">
+      Direct send via Google's API. No tabs, no clicking ever. Setup at <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent)">Google Cloud Console</a> → Enable Gmail API → OAuth 2.0 → redirect: <code style="background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px">http://localhost</code>
+    </div>
+    <div class="g2" style="gap:10px">
+      <div class="fg"><label>Client ID</label><input id="s-gcid" placeholder="xxxx.apps.googleusercontent.com"></div>
+      <div class="fg" style="align-self:end;flex-direction:row;gap:6px">
+        <button class="btn bg2 btn-sm" onclick="saveGCID()">💾 Save</button>
+        <button class="btn bp btn-sm" onclick="gmailAuth()">🔐 Authorize</button>
+      </div>
+    </div>
+    <div id="gmail-st" style="margin-top:9px;font-size:.7rem;color:var(--t3)">Status: Not authorized</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🚀 Setup Wizards</div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn bs" onclick="showModal('ejsModal')">📨 EmailJS Wizard</button>
+      <button class="btn bs" onclick="showModal('gmailModal')">🔑 Gmail API Wizard</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="pt">Profile 👤</div>
+  <div class="ps">Used to personalize every AI-generated email</div>
+  <div class="card">
+    <div class="ct">Your Details</div>
+    <div class="g2">
+      <div class="fg"><label>Full Name</label><input id="p-name" oninput="sp()"></div>
+      <div class="fg"><label>Role / Title</label><input id="p-role" oninput="sp()"></div>
+      <div class="fg"><label>Email</label><input id="p-email" oninput="sp()"></div>
+      <div class="fg"><label>Phone</label><input id="p-phone" oninput="sp()"></div>
+      <div class="fg"><label>LinkedIn URL</label><input id="p-li" oninput="sp()"></div>
+      <div class="fg"><label>Skills</label><input id="p-skills" oninput="sp()"></div>
+      <div class="fg"><label>Experience</label><input id="p-exp" oninput="sp()"></div>
+      <div class="fg"><label>Education</label><input id="p-edu" oninput="sp()"></div>
+      <div class="fg full"><label>Summary</label><textarea id="p-summary" oninput="sp()"></textarea></div>
+      <div class="fg full"><label>Email Signature</label><textarea id="p-sig" oninput="sp()"></textarea></div>
+    </div>
+    <div style="margin-top:13px"><button class="btn bp" onclick="sp();toast('✅ Saved!','tok')">Save Profile</button></div>
+  </div>
+</div>
+
+</main>
+<script>
+// ═══ STATE ════════════════════════════════════════════
+let T=[],A=[],LI=[],P={},CFG={};
+let stopFlag=false,liStopFlag=false,arMode='email';
+let curTid=null,curLiTid=null,gmailToken=null;
+const IID=[2001,2002,2003,2004,2005,2006,2007,2008,2009,2010];
+
+// ═══ SEED ════════════════════════════════════════════
+function seed(){
+  if(localStorage.getItem('rv7')==='2')return;
+  P={name:'Abhijith A',role:'Cloud Security Analyst | DevSecOps Engineer',email:'abhijith9744266@gmail.com',phone:'+91 7902260801',li:'https://linkedin.com/in/abhijith-a-9252a536a',skills:'AWS IAM, Security Hub, CloudTrail, GuardDuty, Lambda, Docker, GitHub Actions, Ansible, Python, Flask, CI/CD, Step Functions, DynamoDB, S3',exp:'Entry-level with hands-on project experience in AWS security, CI/CD pipelines, containerization, and network automation',edu:'MBA (IT) - Symbiosis International University, Pune | BE Computer Science - Anna University 2024 | Advanced Data Science & AI - IIT Roorkee (Intellipaat)',summary:'Entry-level Cloud Security & DevSecOps Analyst with hands-on experience building AWS security compliance frameworks, AI-driven threat detection systems, serverless incident response platforms, and full CI/CD pipelines using Docker and GitHub Actions.',sig:'Best regards,\nAbhijith A\nCloud Security Analyst | DevSecOps Engineer\n+91 7902260801\nlinkedin.com/in/abhijith-a-9252a536a'};
+  T=[
+    {id:1001,co:'TCS',role:'Cloud Security Analyst',type:'Job',email:'',li:'https://linkedin.com/company/tata-consultancy-services',applyUrl:'https://ibegin.tcs.com/iBegin/',notes:'Apply via TCS iBegin portal. Search "security". Connect with TCS recruiters on LinkedIn first.',status:'pending',emailVerified:false,added:td()},
+    {id:1002,co:'Infosys',role:'Cloud Security Engineer',type:'Job',email:'',li:'https://linkedin.com/company/infosys',applyUrl:'https://career.infosys.com/',notes:'Apply on Infosys Career portal. Search "cloud security". Also apply on Naukri.',status:'pending',emailVerified:false,added:td()},
+    {id:1003,co:'Wipro',role:'DevSecOps Engineer',type:'Job',email:'',li:'https://linkedin.com/company/wipro',applyUrl:'https://careers.wipro.com/',notes:'Apply on Wipro Careers. Search "DevSecOps". Connect with Wipro recruiters on LinkedIn.',status:'pending',emailVerified:false,added:td()},
+    {id:1004,co:'Accenture',role:'Security Engineer - Cloud',type:'Job',email:'',li:'https://linkedin.com/company/accenture',applyUrl:'https://www.accenture.com/in-en/careers',notes:'Apply on Accenture Careers India. Great fresher entry point. Also on LinkedIn Jobs.',status:'pending',emailVerified:false,added:td()},
+    {id:1005,co:'IBM India',role:'Cybersecurity Engineer',type:'Job',email:'',li:'https://linkedin.com/company/ibm',applyUrl:'https://www.ibm.com/in-en/employment/',notes:'Apply on IBM Careers. Search "security". Connect with IBM India recruiters on LinkedIn.',status:'pending',emailVerified:false,added:td()},
+    {id:1006,co:'Deloitte India',role:'Cloud Security Specialist',type:'Job',email:'',li:'https://linkedin.com/company/deloitte',applyUrl:'https://www2.deloitte.com/in/en/careers.html',notes:'Apply on Deloitte India Careers. Top cyber advisory firm. Perfect match.',status:'pending',emailVerified:false,added:td()},
+    {id:1007,co:'Amazon AWS',role:'Cloud Security Analyst',type:'Job',email:'',li:'https://linkedin.com/company/amazon-web-services',applyUrl:'https://amazon.jobs/en/search?base_query=cloud+security&loc_query=India',notes:'Apply directly on amazon.jobs. Search "cloud security India". Very competitive — LinkedIn connect first.',status:'pending',emailVerified:false,added:td()},
+    {id:1008,co:'HCLTech',role:'SOC / Cloud Security Analyst',type:'Job',email:'',li:'https://linkedin.com/company/hcltech',applyUrl:'https://www.hcltech.com/careers',notes:'Apply on HCLTech Careers. Good entry point. Also check Naukri for openings.',status:'pending',emailVerified:false,added:td()},
+    {id:1009,co:'EY India',role:'GRC / Cloud Security Analyst',type:'Job',email:'',li:'https://linkedin.com/company/ernstandyoung',applyUrl:'https://careers.ey.com/ey/search/?createNewAlert=false&q=security&locationsearch=India',notes:'Apply on EY Careers. GRC and cloud risk roles. Connect with EY India recruiters on LinkedIn.',status:'pending',emailVerified:false,added:td()},
+    {id:1010,co:'PwC India',role:'Security Consultant',type:'Job',email:'',li:'https://linkedin.com/company/pwc',applyUrl:'https://www.pwc.in/careers.html',notes:'Apply on PwC India Careers. Digital trust and cybersecurity roles. LinkedIn first.',status:'pending',emailVerified:false,added:td()},
+    {id:1011,co:'Xebia India',role:'DevSecOps Engineer',type:'Job',email:'careers@xebia.com',li:'https://linkedin.com/company/xebia',applyUrl:'https://xebia.com/careers/',notes:'✅ Email likely works — small company. Also apply on LinkedIn Jobs directly.',status:'pending',emailVerified:true,added:td()},
+    {id:1012,co:'Cisco India',role:'Network Security Engineer',type:'Job',email:'',li:'https://linkedin.com/company/cisco',applyUrl:'https://jobs.cisco.com/jobs/SearchJobs/security?21178=%5B169482%5D&21178_format=6020&listFilterMode=1',notes:'Apply on Cisco Jobs portal. Filter by India. Network automation + zero-trust is perfect fit.',status:'pending',emailVerified:false,added:td()},
+    {id:1013,co:'KPMG India',role:'Cyber Risk Consultant',type:'Job',email:'',li:'https://linkedin.com/company/kpmg',applyUrl:'https://kpmg.com/in/en/home/careers.html',notes:'Apply on KPMG India Careers. Cyber forensics and risk compliance roles.',status:'pending',emailVerified:false,added:td()},
+    {id:1014,co:'Microsoft India',role:'Azure Security Analyst',type:'Job',email:'',li:'https://linkedin.com/company/microsoft',applyUrl:'https://jobs.microsoft.com/us/en/search?q=security&lc=India',notes:'Apply on Microsoft Careers. Filter India. Very competitive — strong LinkedIn presence helps.',status:'pending',emailVerified:false,added:td()},
+    {id:1015,co:'Fortrea',role:'DevSecOps Engineer (Remote)',type:'Job',email:'careers@fortrea.com',li:'https://linkedin.com/company/fortrea',applyUrl:'https://careers.fortrea.com/',notes:'✅ Email likely works — apply via email + careers portal. Remote-friendly for India.',status:'pending',emailVerified:true,added:td()},
+    {id:2001,co:'CloudSEK',role:'Security Analyst Intern',type:'Internship',email:'careers@cloudsek.com',li:'https://linkedin.com/company/cloudsek',applyUrl:'https://cloudsek.com/careers',notes:'✅ Small startup — careers@ email works. Also apply on LinkedIn. Bangalore based.',status:'pending',emailVerified:true,added:td()},
+    {id:2002,co:'FICO',role:'Cyber Security Intern - DevSecOps',type:'Internship',email:'',li:'https://linkedin.com/company/fico',applyUrl:'https://www.fico.com/en/careers',notes:'⭐ TOP PRIORITY — Python + GitHub Actions + AWS exact match. Apply on FICO Careers portal.',status:'pending',emailVerified:false,added:td()},
+    {id:2003,co:'Caudate Tech',role:'Junior Cybersecurity Engineer',type:'Internship',email:'hr@caudatetech.com',li:'https://linkedin.com/company/caudate-tech',notes:'✅ Small startup — hr@ email works. Cisco, Fortinet partnerships. Fresher-friendly.',status:'pending',emailVerified:true,added:td(),applyUrl:'https://linkedin.com/company/caudate-tech/jobs/'},
+    {id:2004,co:'Sequretek',role:'Cloud Security Intern',type:'Internship',email:'careers@sequretek.com',li:'https://linkedin.com/company/sequretek',applyUrl:'https://sequretek.com/careers/',notes:'✅ Startup email likely works. Series B funded. Apply email + LinkedIn.',status:'pending',emailVerified:true,added:td()},
+    {id:2005,co:'TAC Security',role:'Vulnerability Management Intern',type:'Internship',email:'careers@tacsecurity.com',li:'https://linkedin.com/company/tac-security',applyUrl:'https://tacsecurity.com/careers/',notes:'✅ Startup — careers@ works. Fortune 500 clients. PPO opportunity.',status:'pending',emailVerified:true,added:td()},
+    {id:2006,co:'Kratikal Tech',role:'DevSecOps Intern',type:'Internship',email:'hr@kratikal.com',li:'https://linkedin.com/company/kratikal',applyUrl:'https://kratikal.com/careers/',notes:'✅ Startup — hr@ works. VAPT and cloud security. Actively hiring interns.',status:'pending',emailVerified:true,added:td()},
+    {id:2007,co:'Safe Security',role:'Security Engineer Intern',type:'Internship',email:'careers@safe.security',li:'https://linkedin.com/company/safe-security',applyUrl:'https://safe.security/careers/',notes:'✅ YC-backed startup — careers@ works. Excellent brand name for resume.',status:'pending',emailVerified:true,added:td()},
+    {id:2008,co:'Sattrix',role:'SOC / Cloud Security Intern',type:'Internship',email:'hr@sattrix.com',li:'https://linkedin.com/company/sattrix-information-security',applyUrl:'https://sattrix.com/careers/',notes:'✅ MSSP startup — hr@ works. SOC, SIEM, cloud security. Remote roles.',status:'pending',emailVerified:true,added:td()},
+    {id:2009,co:'Innefu Labs',role:'Security Analyst Intern',type:'Internship',email:'hr@innefu.com',li:'https://linkedin.com/company/innefu-labs',applyUrl:'https://innefu.com/careers/',notes:'✅ AI cybersecurity startup — hr@ works. Threat intelligence platform.',status:'pending',emailVerified:true,added:td()},
+    {id:2010,co:'Sectrio',role:'Cloud Security Intern',type:'Internship',email:'careers@sectrio.com',li:'https://linkedin.com/company/sectrio',applyUrl:'https://sectrio.com/careers/',notes:'✅ IoT/OT startup — careers@ works. Remote-friendly. Fast growing.',status:'pending',emailVerified:true,added:td()},
+  ];
+  sv();localStorage.setItem('rv7','2');
+}
+
+// ═══ UTILS ════════════════════════════════════════════
+function td(){return new Date().toLocaleDateString('en-IN')}
+function sv(){localStorage.setItem('rv_T',JSON.stringify(T));localStorage.setItem('rv_A',JSON.stringify(A));localStorage.setItem('rv_LI',JSON.stringify(LI));localStorage.setItem('rv_P',JSON.stringify(P));localStorage.setItem('rv_CFG',JSON.stringify(CFG))}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function $(id){return document.getElementById(id)}
+function toast(msg,cls='tin',dur=4000){
+  const c=$('toasts'),t=document.createElement('div');
+  t.className='toast '+cls;t.innerHTML=msg;c.appendChild(t);
+  setTimeout(()=>{t.style.transition='.3s';t.style.opacity='0';t.style.transform='translateX(40px)';setTimeout(()=>t.remove(),300)},dur);
+}
+function showModal(id){$(id).style.display='flex'}
+function closeModal(id){$(id).style.display='none'}
+
+// ═══ NAV ══════════════════════════════════════════════
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  $('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='compose')fillSel('c-target',T.filter(t=>t.status==='pending'));
+  if(id==='linkedin'){fillSel('li-target',T);liCC();}
+  if(id==='settings')loadSUI();
+  if(id==='autorun')updateARBanner();
+}
+
+// ═══ PROFILE ══════════════════════════════════════════
+function loadPUI(){['name','role','email','phone','li','skills','exp','edu','summary','sig'].forEach(k=>{const el=$('p-'+k);if(el)el.value=P[k]||'';})}
+function sp(){['name','role','email','phone','li','skills','exp','edu','summary','sig'].forEach(k=>{const el=$('p-'+k);if(el)P[k]=el.value;});sv()}
+
+// ═══ SETTINGS ═════════════════════════════════════════
+function loadSUI(){
+  if($('s-gcid'))$('s-gcid').value=CFG.gmailClientId||'';
+  if($('s-esid'))$('s-esid').value=CFG.ejsServiceId||'';
+  if($('s-etid'))$('s-etid').value=CFG.ejsTemplateId||'';
+  if($('s-ekey'))$('s-ekey').value=CFG.ejsPublicKey||'';
+  updateMUI();
+}
+function saveEJS(){
+  CFG.ejsServiceId=$('s-esid').value.trim();
+  CFG.ejsTemplateId=$('s-etid').value.trim();
+  CFG.ejsPublicKey=$('s-ekey').value.trim();
+  if(CFG.ejsPublicKey)emailjs.init(CFG.ejsPublicKey);
+  sv();$('ejs-st').textContent='✅ Saved — click Test to verify.';toast('✅ EmailJS saved','tok');
+}
+async function testEJS(){
+  if(!CFG.ejsServiceId||!CFG.ejsPublicKey){toast('⚠️ Save config first','ter');return;}
+  emailjs.init(CFG.ejsPublicKey);$('ejs-st').textContent='Sending test...';
+  try{
+    await emailjs.send(CFG.ejsServiceId,CFG.ejsTemplateId,{to_email:P.email,from_name:P.name,subject:'✅ ReachOut Test',message:'EmailJS is working! ReachOut auto-send is ready.'});
+    $('ejs-st').textContent='✅ Test email sent to '+P.email+'! Check inbox.';
+    toast('✅ Test sent! Check your inbox.','tok',6000);
+  }catch(e){$('ejs-st').textContent='❌ Error: '+(e.text||e.message);toast('❌ EJS error: '+(e.text||e.message),'ter');}
+}
+function saveEJSModal(){
+  CFG.ejsServiceId=$('me-sid').value.trim();CFG.ejsTemplateId=$('me-tid').value.trim();CFG.ejsPublicKey=$('me-key').value.trim();
+  if(!CFG.ejsServiceId||!CFG.ejsTemplateId||!CFG.ejsPublicKey){toast('⚠️ Fill all 3 fields','ter');return;}
+  CFG.sendMethod='ejs';emailjs.init(CFG.ejsPublicKey);sv();updateMUI();loadSUI();
+  closeModal('ejsModal');toast('🎉 EmailJS active! Auto-send ON.','tok',6000);
+}
+function saveGCID(){CFG.gmailClientId=$('s-gcid').value.trim();sv();$('gmail-st').textContent='Client ID saved. Click Authorize.';toast('✅ Client ID saved','tok');}
+function saveGmailModal(){CFG.gmailClientId=$('mg-cid').value.trim();if(!CFG.gmailClientId){toast('⚠️ Enter Client ID','ter');return;}sv();if($('s-gcid'))$('s-gcid').value=CFG.gmailClientId;closeModal('gmailModal');gmailAuth();}
+function gmailAuth(){
+  if(!CFG.gmailClientId){toast('⚠️ Enter Client ID first','ter');return;}
+  const scope='https://www.googleapis.com/auth/gmail.send';
+  const redir=window.location.origin||'http://localhost';
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.gmailClientId}&redirect_uri=${encodeURIComponent(redir)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  const pop=window.open(url,'gmailOAuth','width=500,height=600');
+  const poll=setInterval(()=>{
+    try{if(!pop||pop.closed){clearInterval(poll);return;}const h=pop.location.hash;if(h&&h.includes('access_token')){gmailToken=new URLSearchParams(h.substring(1)).get('access_token');clearInterval(poll);pop.close();CFG.sendMethod='gmail';sv();updateMUI();updateDashGmailCard();if($('gmail-st'))$('gmail-st').textContent='✅ Gmail authorized! Auto-send is live.';toast('🎉 Gmail connected! Zero-click send enabled.','tok',6000);}}catch(e){}
+  },400);
+}
+function dashGmailAuth(){
+  if(!CFG.gmailClientId){toast('⚠️ No Client ID found','ter');return;}
+  const ds=$('dash-gmail-status'),btn=$('dash-auth-btn');
+  if(ds)ds.textContent='⏳ Opening Google sign-in...';
+  if(btn)btn.disabled=true;
+  const scope='https://www.googleapis.com/auth/gmail.send';
+  const redir=window.location.origin||'http://localhost';
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.gmailClientId}&redirect_uri=${encodeURIComponent(redir)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  const pop=window.open(url,'gmailOAuth','width=500,height=620,left=400,top=100');
+  if(!pop){toast('⚠️ Popup blocked! Allow popups for this page in Chrome.','ter',7000);if(ds)ds.textContent='❌ Popup blocked — allow popups in Chrome and try again';if(btn)btn.disabled=false;return;}
+  const poll=setInterval(()=>{
+    try{
+      if(!pop||pop.closed){clearInterval(poll);if(btn)btn.disabled=false;if(!gmailToken&&ds)ds.textContent='❌ Window closed — try again';return;}
+      const h=pop.location.hash;
+      if(h&&h.includes('access_token')){
+        gmailToken=new URLSearchParams(h.substring(1)).get('access_token');
+        clearInterval(poll);pop.close();
+        CFG.sendMethod='gmail';sv();updateMUI();updateDashGmailCard();
+        if($('gmail-st'))$('gmail-st').textContent='✅ Gmail authorized!';
+        toast('🎉 Gmail connected! You can now send emails automatically.','tok',7000);
+      }
+    }catch(e){}
+  },400);
+}
+function updateDashGmailCard(){
+  const pill=$('dash-gmail-pill'),card=$('dash-gmail-card');
+  const status=$('dash-gmail-status'),btn=$('dash-auth-btn'),steps=$('dash-gmail-steps');
+  const authorized=CFG.sendMethod==='gmail'&&gmailToken;
+  if(pill){pill.textContent=authorized?'✅ AUTHORIZED':'NOT AUTHORIZED';pill.className='bdg '+(authorized?'bgreen':'by');}
+  if(authorized){
+    if(status){status.innerHTML='✅ <b style="color:var(--green)">Gmail is connected!</b> Emails will send automatically — zero clicking.';status.style.color='var(--green)';}
+    if(btn){btn.textContent='✅ Authorized';btn.className='btn bg2 btn-lg';btn.disabled=true;}
+    if(steps)steps.innerHTML='<div style="font-size:.74rem;color:var(--green);font-weight:600">🎉 All done! Gmail is live. Go to ⚡ Auto Run to send your first batch of emails.</div>';
+    if(card)card.style.borderColor='rgba(0,229,160,.35)';
+  }
+}
+function setMethod(m){CFG.sendMethod=m;sv();updateMUI();toast('✅ Method: '+m,'tok');}
+function updateMUI(){
+  const m=CFG.sendMethod||'tab';
+  // Sidebar pill
+  const pill=$('mpill'),pt=$('mpill-txt');
+  if(m==='tab'){pill.className='mpill off';pt.textContent='Manual — tap to setup auto';}
+  else{pill.className='mpill on';pt.textContent=m==='gmail'?'Gmail API ⚡ Active':'EmailJS ⚡ Active';}
+  // Settings buttons
+  ['gmail','ejs','tab'].forEach(x=>{const b=$('sm-'+x);if(!b)return;b.className='btn '+(m===x?'bg2':'bs');});
+  // Settings banner
+  const sb=$('s-banner');
+  if(sb){
+    const ok=m!=='tab';
+    sb.className='banner '+(ok?'ok':'warn');
+    sb.innerHTML='<div>'+(ok?'✅':'⚠️')+'</div><div class="banner-txt">'+(
+      m==='gmail'?'<b>Gmail API active.</b> Emails send directly from your account — zero clicking.' :
+      m==='ejs'?'<b>EmailJS active.</b> Emails send automatically (200/month free).' :
+      '<b>Gmail Tabs mode.</b> Each run opens Gmail tabs — you click Send.'
+    )+'</div>';
+  }
+  // Compose badge
+  const cb=$('c-mbadge');if(cb){cb.textContent=m==='gmail'?'Gmail API':m==='ejs'?'EmailJS':'Manual Tab';cb.className='bdg '+(m==='tab'?'by':m==='gmail'?'bgreen':'bblue');}
+  const sb2=$('c-send-btn');if(sb2)sb2.textContent=m==='tab'?'📧 Open Gmail':'⚡ Send Automatically';
+  // Pending badge
+  const p=T.filter(t=>t.status==='pending').length,nb=$('nb-pend');
+  if(nb){nb.textContent=p;nb.style.display=p?'':'none';}
+  updateARBanner();
+}
+function updateARBanner(){
+  const m=CFG.sendMethod||'tab',b=$('ar-banner'),bt=$('ar-banner-txt');
+  if(!b||!bt)return;
+  if(m==='tab'){b.className='banner warn';bt.innerHTML='<b>Manual mode</b> — Gmail tabs open for each target. Connect EmailJS in Settings for zero-click auto-send.';}
+  else{b.className='banner ok';bt.innerHTML='<b>'+(m==='gmail'?'Gmail API':'EmailJS')+' connected</b> — emails will send automatically. No clicking needed.';}
+  const btn=b.querySelector('button');if(btn)btn.style.display=m==='tab'?'':'none';
+}
+
+// ═══ TARGETS ══════════════════════════════════════════
+function fillSel(id,arr){
+  const s=$(id);if(!s)return;
+  s.innerHTML='<option value="">— Choose —</option>'+arr.map(t=>`<option value="${t.id}">${t.co} — ${t.role}</option>`).join('');
+}
+function addTarget(){
+  const co=$('t-co').value.trim(),rl=$('t-rl').value.trim();
+  if(!co||!rl){toast('⚠️ Company + Role required','ter');return;}
+  T.push({id:Date.now(),co,role:rl,type:$('t-ty').value,email:$('t-em').value.trim(),li:$('t-li').value.trim(),notes:$('t-no').value.trim(),status:'pending',added:td()});
+  sv();renderT();updateDash();fillSel('c-target',T.filter(t=>t.status==='pending'));fillSel('li-target',T);
+  ['t-co','t-rl','t-em','t-li','t-no'].forEach(i=>$(i).value='');
+  toast('🎯 Added: '+co,'tok');
+}
+function renderT(){
+  const tb=$('t-body');$('t-cnt').textContent='('+T.length+')';
+  if(!T.length){tb.innerHTML='<tr><td colspan="7" style="color:var(--t3);text-align:center;padding:22px">No targets yet</td></tr>';return;}
+  tb.innerHTML=T.map(t=>`<tr>
+    <td><strong>${t.co}</strong>${t.notes&&t.notes.startsWith('⭐')?'<span class="bdg bgreen" style="margin-left:5px;font-size:.55rem">TOP</span>':''}</td>
+    <td style="color:var(--t2);font-size:.72rem">${t.role}</td>
+    <td><span class="bdg ${t.type==='Internship'?'bpurple':'bblue'}">${t.type}</span></td>
+    <td style="font-size:.68rem">${t.email&&t.emailVerified?`<span style="color:var(--green)">✅ `+t.email+`</span>`:t.email?`<span style="color:var(--yellow)">⚠️ `+t.email+`</span>`:'<span style="color:var(--pink);font-size:.65rem">❌ Use portal</span>'}</td>
+    <td><span class="bdg ${t.status==='sent'?'bgreen':'by'}">${t.status}</span></td>
+    <td>${t.applyUrl?`<a href="${t.applyUrl}" target="_blank" class="btn bs btn-sm" style="text-decoration:none;font-size:.63rem">🌐 Apply</a>`:''}</td>
+    <td><div style="display:flex;gap:4px">
+      ${t.email?`<button class="btn bs btn-sm" onclick="qCompose(${t.id})" style="font-size:.63rem">✉</button>`:''}
+      <button class="btn bli btn-sm" onclick="qLI(${t.id})" style="font-size:.63rem">💼 LI</button>
+      <button class="btn br btn-sm" onclick="delT(${t.id})" style="font-size:.63rem">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+function delT(id){T=T.filter(t=>t.id!==id);sv();renderT();updateDash();fillSel('c-target',T.filter(t=>t.status==='pending'));fillSel('li-target',T);toast('🗑 Removed','tin')}
+
+// ═══ TRACKER ══════════════════════════════════════════
+function renderTR(){
+  const tb=$('tr-body');
+  if(!A.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--t3);text-align:center;padding:22px">No applications yet</td></tr>';return;}
+  tb.innerHTML=A.slice().reverse().map(a=>`<tr>
+    <td><strong>${a.co}</strong></td>
+    <td style="color:var(--t2)">${a.role}</td>
+    <td style="color:var(--t3);font-size:.69rem;font-family:'JetBrains Mono',monospace">${a.date}</td>
+    <td><span class="bdg ${['responded','interview','offer'].includes(a.status)?'bgreen':'by'}">${a.status}</span></td>
+    <td><select onchange="updA(${a.id},this.value)" style="padding:4px 8px;font-size:.67rem;width:auto">
+      <option ${a.status==='sent'?'selected':''} value="sent">Sent</option>
+      <option ${a.status==='responded'?'selected':''} value="responded">Responded</option>
+      <option ${a.status==='interview'?'selected':''} value="interview">Interview 🎯</option>
+      <option ${a.status==='rejected'?'selected':''} value="rejected">Rejected</option>
+      <option ${a.status==='offer'?'selected':''} value="offer">Offer 🎉</option>
+    </select></td>
+  </tr>`).join('');
+}
+function updA(id,st){A=A.map(a=>a.id===id?{...a,status:st}:a);sv();renderTR();updateDash();}
+
+// ═══ DASHBOARD ════════════════════════════════════════
+function updateDash(){
+  const pend=T.filter(t=>t.status==='pending').length;
+  const resp=A.filter(a=>['responded','interview','offer'].includes(a.status)).length;
+  const rr=A.length?Math.round(resp/A.length*100):0;
+  $('d1').textContent=T.length;$('d2').textContent=A.length;$('d3').textContent=resp;$('d4').textContent=pend;$('d5').textContent=LI.length;
+  $('d1-s').textContent=T.length+' companies';
+  $('d2-s').textContent=A.length?'last: '+A[A.length-1]?.co:'no emails yet';
+  $('d3-r').textContent=rr+'% response rate';
+  $('sb1').textContent=T.length;$('sb2').textContent=A.length;$('sb3').textContent=LI.length;$('sb4').textContent=resp;
+  $('hero-n').textContent=pend;
+  const verified=T.filter(t=>t.emailVerified&&t.email).length;
+  const noEmail=T.filter(t=>!t.email).length;
+  $('dash-verified').textContent=verified+' verified emails, '+noEmail+' portal-only';
+  $('nb-pend').textContent=pend;$('nb-pend').style.display=pend?'':'none';
+  const h=new Date().getHours();
+  $('dash-greet').textContent=(h<12?'Good morning ☀️':h<17?'Good afternoon 🌤':'Good evening 🌙')+`, Abhijith — ${pend} pending, ${A.length} sent, ${resp} responses`;
+  // banner
+  const m=CFG.sendMethod||'tab',db=$('dash-banner');
+  if(db){
+    if(m==='tab'){
+      db.className='banner warn';
+      db.innerHTML='<div>⚠️</div><div class="banner-txt"><b>No auto-send configured.</b> Set up EmailJS (free, 3 min) for zero-click sending.</div><button class="btn bya btn-sm" onclick="nav(\'settings\',document.querySelectorAll(\'.nb\')[6])">Setup →</button>';
+    } else {
+      db.className='banner ok';
+      db.innerHTML='<div>✅</div><div class="banner-txt"><b>'+(m==='gmail'?'Gmail API':'EmailJS')+' connected.</b> Auto Run will send all emails automatically — no clicking needed.</div>';
+    }
+  }
+  // hero sub
+  const hs=$('hero-s');if(hs)hs.textContent=m==='tab'?'Gmail tabs will open per target — you click Send each time.':'Auto Run sends every email automatically without any clicking.';
+  // recent feeds
+  const re=$('drec-e');$('rc-e').textContent=A.length?A.length+' total':'';
+  if(!A.length)re.innerHTML='<div style="color:var(--t3);font-size:.73rem;text-align:center;padding:16px">No emails yet</div>';
+  else re.innerHTML=A.slice(-6).reverse().map(a=>`<div class="fi"><div class="fi-dot" style="background:${['responded','offer','interview'].includes(a.status)?'var(--green)':'var(--accent)'}"></div><div class="fi-text"><strong>${a.co}</strong> <span style="color:var(--t3)">${a.role}</span></div><div class="fi-time">${a.date}</div></div>`).join('');
+  const rl=$('drec-l');$('rc-l').textContent=LI.length?LI.length+' total':'';
+  if(!LI.length)rl.innerHTML='<div style="color:var(--t3);font-size:.73rem;text-align:center;padding:16px">No connects yet</div>';
+  else rl.innerHTML=LI.slice(-6).reverse().map(l=>`<div class="fi"><div class="fi-dot" style="background:var(--blue)"></div><div class="fi-text"><strong>${l.co}</strong> <span style="color:var(--t3)">${l.role}</span></div><div class="fi-time">${l.date}</div></div>`).join('');
+  updateTodayItems();
+}
+
+// ═══ AI ═══════════════════════════════════════════════
+async function ai(prompt){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);
+  return d.content?.[0]?.text||'';
+}
+function mkEP(t,etype,extra=''){
+  const intern=t.type==='Internship'||etype.includes('Internship');
+  return `Write a ${intern?'concise internship application':'professional cold job application'} email.
+Applicant: ${P.name} | ${P.role} | ${P.email} | ${P.phone} | ${P.li}
+Skills: ${P.skills} | Exp: ${P.exp} | Edu: ${P.edu}
+Summary: ${P.summary}
+Target: ${t.co} | ${t.role} | ${t.type} | Notes: ${t.notes||'N/A'}
+${extra?'Extra: '+extra:''}
+Rules: 5-7 line body, human not robotic, mention 1-2 specific relevant skills, clear CTA, no "I hope this finds you well".
+Format EXACTLY:
+SUBJECT: [subject]
+BODY:
+[body only]`;
+}
+function mkLP(t,style='Genuine & Personal',extra=''){
+  return `Write a LinkedIn connection note. MAX 285 characters.
+From: ${P.name}, ${P.role}
+To company: ${t.co} | Role: ${t.role} | Context: ${t.notes||''}
+Style: ${style}${extra?'\nExtra: '+extra:''}
+Rules: Under 285 chars, mention something specific about their work, end with soft CTA. Human tone. No generic openers like "I came across".
+RESPOND WITH ONLY THE NOTE TEXT. Nothing else.`;
+}
+
+// ═══ EMAIL DISPATCH ════════════════════════════════════
+async function dispatch(t,subj,body){
+  const m=CFG.sendMethod||'tab';
+  if(m==='gmail'&&gmailToken)return sendGmailAPI(t,subj,body);
+  if(m==='ejs'&&CFG.ejsServiceId)return sendEJS(t,subj,body);
+  openTab(t,subj,body);return{ok:true,method:'tab'};
+}
+async function sendGmailAPI(t,subj,body){
+  if(!t.email)throw new Error('No email for '+t.co);
+  const raw=btoa(unescape(encodeURIComponent(`From: ${P.name} <${P.email}>\r\nTo: ${t.email}\r\nSubject: ${subj}\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n${body}`))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const r=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',{method:'POST',headers:{'Authorization':'Bearer '+gmailToken,'Content-Type':'application/json'},body:JSON.stringify({raw})});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Gmail API error');}
+  return{ok:true,method:'gmail'};
+}
+async function sendEJS(t,subj,body){
+  emailjs.init(CFG.ejsPublicKey);
+  await emailjs.send(CFG.ejsServiceId,CFG.ejsTemplateId,{to_email:t.email,from_name:P.name,subject:subj,message:body});
+  return{ok:true,method:'ejs'};
+}
+function openTab(t,subj,body){window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(t.email||'')}&su=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`,'_blank');}
+
+// ═══ COMPOSE ══════════════════════════════════════════
+async function genSingle(){
+  const tid=$('c-target').value;if(!tid){toast('⚠️ Select a target','ter');return;}
+  const t=T.find(x=>x.id==tid);curTid=parseInt(tid);
+  const etype=$('c-type').value,extra=$('c-note').value;
+  const res=$('c-result'),bdy=$('c-body');
+  res.style.display='flex';bdy.classList.add('loading');bdy.textContent='Generating...';
+  $('c-subj').value='';$('c-sts').textContent='';
+  updateMUI();
+  try{
+    const txt=await ai(mkEP(t,etype,extra));
+    const sm=txt.match(/SUBJECT:\s*(.+)/),bm=txt.match(/BODY:\s*([\s\S]+)/);
+    $('c-subj').value=sm?sm[1].trim():`Application for ${t.role} at ${t.co}`;
+    bdy.textContent=(bm?bm[1].trim():txt)+(P.sig?'\n\n'+P.sig:'');
+    bdy.classList.remove('loading');toast('✨ Email ready!','tok');
+    // Also gen LI
+    const lic=$('c-li-card');if(lic)lic.style.display='block';
+    const liel=$('c-li-body');if(liel){liel.classList.add('loading');liel.textContent='Generating LinkedIn note...';
+      try{const lt=await ai(mkLP(t));liel.textContent=lt.trim().substring(0,285);liel.classList.remove('loading');ccUp('c-li-body','c-li-cc');}
+      catch(e){liel.classList.remove('loading');liel.textContent='Could not generate LI note.';}
+    }
+  }catch(e){bdy.classList.remove('loading');bdy.textContent='Error: '+e.message;toast('❌ '+e.message,'ter');}
+}
+async function sendEmail(){
+  const subj=$('c-subj').value,body=$('c-body').textContent;
+  const t=T.find(x=>x.id===curTid);if(!t){toast('⚠️ No target','ter');return;}
+  const btn=$('c-send-btn'),st=$('c-sts');
+  btn.disabled=true;st.textContent='Sending...';
+  try{
+    const r=await dispatch(t,subj,body);
+    if(r.method==='tab')st.textContent='📭 Gmail tab opened — click Send there!';
+    else{st.textContent='✅ Sent via '+(r.method==='gmail'?'Gmail API':'EmailJS')+'!';markSentQ(curTid);}
+    toast(r.method==='tab'?'📧 Gmail tab opened!':'✅ Email sent!','tok');
+  }catch(e){st.textContent='❌ '+e.message;toast('❌ '+e.message,'ter');}
+  btn.disabled=false;
+}
+function markSentQ(id){const t=T.find(x=>x.id===id);if(!t||t.status==='sent')return;t.status='sent';A.push({id:Date.now(),co:t.co,role:t.role,date:td(),status:'sent'});sv();renderT();renderTR();updateDash();fillSel('c-target',T.filter(t=>t.status==='pending'));}
+function markSentM(){markSentQ(curTid);const t=T.find(x=>x.id===curTid);toast('✅ Marked sent: '+(t?.co||''),'tok');}
+function copyMsg(){navigator.clipboard.writeText($('c-subj').value+'\n\n'+$('c-body').textContent).then(()=>toast('📋 Copied!','tok'));}
+function openLIcopy(elId,_,tidRef){
+  const id=tidRef==='curTid'?curTid:curLiTid;
+  const t=T.find(x=>x.id===id);if(!t){toast('⚠️ No target','ter');return;}
+  const msg=$(elId).textContent;
+  navigator.clipboard.writeText(msg).then(()=>{window.open(t.li||'https://linkedin.com/jobs','_blank');toast('💼 LinkedIn opened — paste note in Connect dialog!','tli',5000);});
+}
+function markLIFor(id){const t=T.find(x=>x.id===id);if(!t)return;LI.push({id:Date.now(),co:t.co,role:t.role,date:td()});sv();updateDash();toast('✅ LI marked: '+t.co,'tli');}
+function qCompose(id){curTid=id;nav('compose',document.querySelectorAll('.nb')[2]);setTimeout(()=>{$('c-target').value=id;genSingle();},250);}
+function qLI(id){nav('linkedin',document.querySelectorAll('.nb')[3]);setTimeout(()=>{$('li-target').value=id;genLI();},250);}
+
+// ═══ AUTO RUN ═════════════════════════════════════════
+function setARMode(m,el){
+  arMode=m;
+  document.querySelectorAll('#ar-mode-tabs .tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+async function startAuto(){
+  const filter=$('ar-filter').value,delay=parseInt($('ar-delay').value),etype=$('ar-type').value,alsoLI=$('ar-also-li').checked;
+  let Q=T.filter(t=>t.status==='pending');
+  if(filter==='intern')Q=Q.filter(t=>t.type==='Internship'||IID.includes(t.id));
+  if(filter==='ft')Q=Q.filter(t=>!IID.includes(t.id));
+  if(!Q.length){toast('✅ No pending targets!','tok');return;}
+  stopFlag=false;
+  $('ar-start').style.display='none';$('ar-stop').style.display='inline-flex';
+  $('ar-pw').style.display='block';$('ar-qc').textContent='('+Q.length+')';$('ar-status').textContent='Starting...';
+  const qel=$('ar-queue');
+  qel.innerHTML=Q.map((t,i)=>`<div class="qi" id="qi-${t.id}"><div class="qi-n">${i+1}</div><div style="flex:1"><div class="qi-name">${t.co}</div><div class="qi-role">${t.role} · <span class="bdg ${t.type==='Internship'?'bpurple':'bblue'}" style="font-size:.57rem">${t.type}</span></div></div><div class="qi-st"><span class="bdg by" id="qs-${t.id}">waiting</span></div></div>`).join('');
+  const m=CFG.sendMethod||'tab';
+  for(let i=0;i<Q.length;i++){
+    if(stopFlag)break;
+    const t=Q[i];
+    $('ar-pf').style.width=Math.round(i/Q.length*100)+'%';
+    $('ar-status').textContent=`${i+1}/${Q.length} — ${t.co}`;
+    const qi=$('qi-'+t.id),qs=$('qs-'+t.id);
+    qi.classList.add('sending');qs.innerHTML='<span class="spin"></span> generating...';
+    try{
+      if(arMode==='email'||arMode==='both'){
+        const et=etype.includes('Mixed')?(t.type==='Internship'?'Internship Application':'Cold Email'):etype;
+        const txt=await ai(mkEP(t,et));
+        const sm=txt.match(/SUBJECT:\s*(.+)/),bm=txt.match(/BODY:\s*([\s\S]+)/);
+        const subj=sm?sm[1].trim():`Application for ${t.role} at ${t.co}`;
+        const body=(bm?bm[1].trim():txt)+(P.sig?'\n\n'+P.sig:'');
+        qs.innerHTML='<span class="spin"></span> '+(m==='tab'?'opening...':'sending...');
+        const res=await dispatch(t,subj,body);
+        markSentQ(t.id);
+        qi.classList.remove('sending');qi.classList.add('done-e');
+        qs.className='bdg bgreen';qs.textContent=res.method==='tab'?'📭 Tab opened':'✅ Sent!';
+        toast(`📧 ${t.co} — ${res.method==='tab'?'Gmail tab opened':'Sent automatically!'}`, 'tok', 2500);
+      }
+      if(arMode==='li'||arMode==='both'||alsoLI){
+        const lt=await ai(mkLP(t));
+        await navigator.clipboard.writeText(lt.trim().substring(0,285));
+        window.open(t.li||'https://linkedin.com','_blank');
+        LI.push({id:Date.now()+i,co:t.co,role:t.role,date:td()});sv();updateDash();
+        if(arMode==='li'){qi.classList.remove('sending');qi.classList.add('done-l');qs.className='bdg bblue';qs.textContent='💼 LI opened';}
+        else{qs.textContent+=' +💼';}
+        toast(`💼 ${t.co} — LinkedIn open, paste note!`, 'tli', 2500);
+      }
+      if(i<Q.length-1&&!stopFlag)await sleep(delay);
+    }catch(e){
+      qi.classList.remove('sending');qi.classList.add('err');
+      qs.className='bdg bred';qs.textContent='❌ failed';
+      toast(`❌ ${t.co}: ${e.message}`,'ter');
+      await sleep(1500);
+    }
+  }
+  $('ar-pf').style.width='100%';
+  const done=A.filter(a=>Q.find(q=>q.co===a.co)).length;
+  $('ar-status').textContent=stopFlag?`⏹ Stopped`:(m==='tab'?`✅ Done! Click Send in each Gmail tab.`:`✅ ${Q.length} emails sent automatically!`);
+  $('ar-start').style.display='inline-flex';$('ar-stop').style.display='none';
+  renderT();renderTR();fillSel('c-target',T.filter(t=>t.status==='pending'));
+  if(!stopFlag)toast(m==='tab'?`🎉 Done! ${Q.length} Gmail tabs open.`:`🎉 ${Q.length} emails sent — zero clicks!`,'tok',6000);
+}
+function stopAuto(){stopFlag=true;toast('⏹ Stopping...','tin')}
+
+// ═══ LINKEDIN ═════════════════════════════════════════
+function liCC(){ccUp('li-msg','li-cc');}
+function ccUp(srcId,cntId){const el=$(srcId),c=$(cntId);if(!el||!c)return;const n=el.textContent.length;c.textContent=n+'/290';c.style.color=n>280?'var(--pink)':n>250?'var(--yellow)':'var(--t3)';}
+async function genLI(){
+  const tid=$('li-target').value;if(!tid){toast('⚠️ Select target','ter');return;}
+  const t=T.find(x=>x.id==tid);curLiTid=parseInt(tid);
+  const style=$('li-style').value,extra=$('li-extra').value;
+  const msg=$('li-msg');
+  msg.classList.add('loading');msg.textContent='Generating...';
+  try{const txt=await ai(mkLP(t,style,extra));msg.textContent=txt.trim().substring(0,285);msg.classList.remove('loading');liCC();toast('✨ Note ready!','tli');}
+  catch(e){msg.classList.remove('loading');msg.textContent='Error: '+e.message;toast('❌ '+e.message,'ter');}
+}
+function cpLI(){navigator.clipboard.writeText($('li-msg').textContent).then(()=>toast('📋 Copied!','tli'));}
+function markLISent(){if(!curLiTid)return;markLIFor(curLiTid);fillSel('li-target',T);}
+function markLISentFromPage(){markLISent();}
+
+async function startLI(){
+  const filter=$('li-filter').value,delay=parseInt($('li-delay').value);
+  let Q=T.filter(t=>!LI.find(l=>l.co===t.co));
+  if(filter==='intern')Q=Q.filter(t=>t.type==='Internship'||IID.includes(t.id));
+  if(filter==='ft')Q=Q.filter(t=>!IID.includes(t.id));
+  if(filter==='emailed')Q=Q.filter(t=>t.status==='sent');
+  if(!Q.length){toast('✅ All targets LinkedIn-ed!','tli');return;}
+  liStopFlag=false;
+  $('li-start').style.display='none';$('li-stop').style.display='inline-flex';
+  $('li-pw').style.display='block';$('li-qc').textContent='('+Q.length+')';
+  $('li-qcard').style.display='block';$('li-status').textContent='Starting...';
+  const qel=$('li-queue');
+  qel.innerHTML=Q.map((t,i)=>`<div class="qi" id="liq-${t.id}"><div class="qi-n">${i+1}</div><div style="flex:1"><div class="qi-name">${t.co}</div><div class="qi-role">${t.role}</div></div><div class="qi-st"><span class="bdg by" id="liqs-${t.id}">waiting</span></div></div>`).join('');
+  for(let i=0;i<Q.length;i++){
+    if(liStopFlag)break;
+    const t=Q[i];
+    $('li-pf').style.width=Math.round(i/Q.length*100)+'%';
+    $('li-status').textContent=`${i+1}/${Q.length} — ${t.co}`;
+    const qi=$('liq-'+t.id),qs=$('liqs-'+t.id);
+    qi.classList.add('sending');qs.innerHTML='<span class="spin"></span> generating...';
+    try{
+      const lt=await ai(mkLP(t));
+      await navigator.clipboard.writeText(lt.trim().substring(0,285));
+      window.open(t.li||'https://linkedin.com','_blank');
+      LI.push({id:Date.now()+i,co:t.co,role:t.role,date:td()});sv();updateDash();
+      qi.classList.remove('sending');qi.classList.add('done-l');qs.className='bdg bblue';qs.textContent='💼 Opened';
+      toast(`💼 ${t.co} — paste note + Connect!`,'tli',2500);
+      if(i<Q.length-1&&!liStopFlag)await sleep(delay);
+    }catch(e){
+      qi.classList.remove('sending');qi.classList.add('err');qs.className='bdg bred';qs.textContent='❌ failed';
+      await sleep(1500);
+    }
+  }
+  $('li-pf').style.width='100%';
+  $('li-status').textContent=liStopFlag?'⏹ Stopped':'✅ Done! Connect in each LinkedIn tab.';
+  $('li-start').style.display='inline-flex';$('li-stop').style.display='none';
+  if(!liStopFlag)toast('🎉 LinkedIn run done!','tli',5000);
+}
+function stopLI(){liStopFlag=true;toast('⏹ Stopping...','tin')}
+
+// ═══ AUTOMATION ═══════════════════════════════════════
+function toggleSetup(){
+  const el=$('gas-steps');
+  const isOpen=el.classList.contains('open');
+  el.classList.toggle('open');
+  el.closest('.card').querySelector('.btn-sm').textContent=isOpen?'Show Steps ▾':'Hide Steps ▴';
+}
+
+function markGASLive(){
+  CFG.gasLive=true;sv();updateAutoDash();
+  toast('✅ Daily automation marked as LIVE!','tok',5000);
+}
+function markGASOff(){
+  CFG.gasLive=false;sv();updateAutoDash();
+  toast('⏹ Automation marked as off','tin');
+}
+
+function updateAutoDash(){
+  const live=CFG.gasLive===true;
+  // Sidebar badge
+  const nb=$('nb-sched');if(nb)nb.style.display=live?'':'none';
+  // Live pill on automation page
+  const lp=$('auto-live-pill');if(lp)lp.style.display=live?'flex':'none';
+  // Status text
+  const st=$('gas-status-txt');if(st)st.textContent=live?'✅ LIVE — running daily at 9am':'Status: Not set up';
+  // Dashboard pill
+  const pill=$('dash-auto-status-pill');
+  if(pill){
+    pill.textContent=live?'LIVE ✅':'NOT SET UP';
+    pill.className='bdg '+(live?'bgreen':'by');
+  }
+  // Schedule cards
+  const scGas=$('sc-gas-n'),scSub=$('sc-gas-sub');
+  if(scGas){
+    scGas.textContent=live?'9am':'—';
+    scSub.textContent=live?'tomorrow':'setup needed';
+    $('sc-gas').className='sched-card '+(live?'active':'');
+  }
+  // Today's action items
+  updateTodayItems();
+}
+
+function updateTodayItems(){
+  const el=$('today-items');if(!el)return;
+  const live=CFG.gasLive===true;
+  const pending=T.filter(t=>t.status==='pending');
+  const noEmail=pending.filter(t=>!t.email||!t.emailVerified);
+  const withEmail=pending.filter(t=>t.email&&t.emailVerified);
+  const liPending=T.filter(t=>!LI.find(l=>l.co===t.co)).slice(0,3);
+  const items=[];
+  if(!live){
+    items.push({icon:'⚙️',color:'var(--yellow)',text:'Set up Google Apps Script for daily automation',action:"nav('automation',document.querySelectorAll('.nb')[4])",btn:'Setup →'});
+  } else {
+    items.push({icon:'✅',color:'var(--green)',text:'Daily automation is LIVE — emails sending at 9am automatically',action:null,btn:null});
+  }
+  if(liPending.length>0){
+    items.push({icon:'💼',color:'var(--blue)',text:`Connect on LinkedIn today: ${liPending.map(t=>t.co).join(', ')}`,action:"nav('linkedin',document.querySelectorAll('.nb')[3])",btn:'Open LinkedIn →'});
+  }
+  noEmail.slice(0,3).forEach(t=>{
+    if(t.applyUrl)items.push({icon:'🌐',color:'var(--accent)',text:`Apply on portal: ${t.co} — ${t.role}`,action:`window.open('${t.applyUrl}','_blank')`,btn:'Apply →'});
+  });
+  if(items.length===0){
+    el.innerHTML='<div style="color:var(--t3);font-size:.73rem;text-align:center;padding:10px">All caught up! 🎉 Check back tomorrow.</div>';
+    return;
+  }
+  el.innerHTML=items.map(item=>`
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.15);border:1px solid var(--border);border-radius:8px;padding:10px 13px">
+      <span style="font-size:1rem;flex-shrink:0">${item.icon}</span>
+      <span style="flex:1;font-size:.73rem;color:var(--t2)">${item.text}</span>
+      ${item.action?`<button class="btn bs btn-sm" style="font-size:.65rem" onclick="${item.action}">${item.btn}</button>`:''}
+    </div>`).join('');
+}
+
+function downloadScript(){
+  const script = buildGASScript();
+  const blob = new Blob([script], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ReachOut_Automation.gs';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('⬇ Script downloaded! Paste into script.google.com','tok',5000);
+}
+
+function buildGASScript(){
+  // Build the script dynamically with current profile + targets
+  const emailTargets = T.filter(t=>t.email&&t.emailVerified);
+  const allTargets = T;
+  return `// ReachOut Daily Automation — Generated ${new Date().toLocaleDateString('en-IN')}
+// Paste this into script.google.com → Run setupAutomation once → Done!
+
+const PROFILE = {
+  name: "${P.name||'Abhijith A'}",
+  role: "${P.role||'Cloud Security Analyst | DevSecOps Engineer'}",
+  email: "${P.email||'abhijith9744266@gmail.com'}",
+  phone: "${P.phone||'+91 7902260801'}",
+  linkedin: "${P.li||'linkedin.com/in/abhijith-a-9252a536a'}",
+  skills: "${(P.skills||'AWS IAM, GuardDuty, Docker, GitHub Actions, Python').replace(/"/g,"'")}",
+  summary: "${(P.summary||'Cloud Security & DevSecOps Analyst').replace(/"/g,"'").replace(/\n/g,' ')}",
+  signature: "Best regards,\n${P.name||'Abhijith A'}\n${P.role||'Cloud Security Analyst'}\n${P.phone||'+91 7902260801'}"
+};
+
+const SETTINGS = {
+  emailsPerDay: 3,
+  followUpDays: 5,
+  maxFollowUps: 2,
+  sendTimeHour: 9,
+  sheetName: "ReachOut Tracker",
+  dailySummaryEmail: "${P.email||'abhijith9744266@gmail.com'}"
+};
+
+const EMAIL_TARGETS = ${JSON.stringify(emailTargets.map(t=>({id:t.id,company:t.co,role:t.role,type:t.type,email:t.email,linkedin:t.li||'',notes:t.notes||'',applyUrl:t.applyUrl||''})),null,2)};
+
+const ALL_TARGETS = ${JSON.stringify(allTargets.map(t=>({id:t.id,company:t.co,role:t.role,type:t.type,email:t.email||'',linkedin:t.li||'',notes:t.notes||'',applyUrl:t.applyUrl||'',canEmail:!!(t.email&&t.emailVerified)})),null,2)};
+
+function buildEmailBody(target, isFollowUp, followUpNum) {
+  if (isFollowUp) {
+    return "Hi,\n\nI wanted to follow up on my application for the " + target.role + " position at " + target.company + " sent " + (followUpNum===1?"last week":"a couple weeks ago") + ".\n\nI remain very interested in contributing to " + target.company + ". My experience in AWS security, CI/CD pipelines, and DevSecOps aligns well with your work.\n\nHappy to connect at your convenience. Resume attached.\n\n" + PROFILE.signature;
+  }
+  const isIntern = target.type === "Internship";
+  return "Hi,\n\nI'm writing to express my interest in the " + target.role + " role at " + target.company + ".\n\n" + (isIntern ? "I'm a recent CS graduate (Anna University 2024) with MBA IT from Symbiosis, and hands-on project experience in AWS security (IAM, GuardDuty, Security Hub), CI/CD with GitHub Actions, and Docker containerization." : "I hold an MBA in IT from Symbiosis International University and a BE in Computer Science, with hands-on experience in AWS security (IAM, Security Hub, GuardDuty), DevSecOps pipelines with GitHub Actions and Docker, and serverless architectures.") + "\n\nI believe my background in " + (target.notes ? target.notes.split('.')[0].toLowerCase() : "cloud security and DevSecOps") + " would let me contribute from day one.\n\nMy resume is attached. Would love to connect.\n\n" + PROFILE.signature;
+}
+
+function buildSubject(target, isFollowUp) {
+  if (isFollowUp) return "Follow-up: " + target.role + " Application — " + PROFILE.name;
+  return "Application: " + target.role + " — " + PROFILE.name + " | Cloud Security & DevSecOps";
+}
+
+function getOrCreateSheet() {
+  const files = DriveApp.getFilesByName(SETTINGS.sheetName);
+  let ss;
+  if (files.hasNext()) {
+    ss = SpreadsheetApp.open(files.next());
+  } else {
+    ss = SpreadsheetApp.create(SETTINGS.sheetName);
+    const sheet = ss.getActiveSheet();
+    sheet.setName("Applications");
+    sheet.getRange(1,1,1,10).setValues([["Company","Role","Type","Email","Subject","Status","Sent Date","Follow-up 1","Follow-up 2","Notes"]]);
+    sheet.getRange(1,1,1,10).setFontWeight("bold").setBackground("#6c47ff").setFontColor("#ffffff");
+    sheet.setFrozenRows(1);
+    const rows = ALL_TARGETS.map(t=>[t.company,t.role,t.type,t.email||"portal only","","pending","","","",t.notes]);
+    sheet.getRange(2,1,rows.length,10).setValues(rows);
+    sheet.autoResizeColumns(1,10);
+    const liSheet = ss.insertSheet("LinkedIn");
+    liSheet.getRange(1,1,1,5).setValues([["Company","LinkedIn URL","Note Sent?","Date","Connected?"]]);
+    liSheet.getRange(1,1,1,5).setFontWeight("bold").setBackground("#0a66c2").setFontColor("#ffffff");
+    const liRows = ALL_TARGETS.map(t=>[t.company,t.linkedin,"No","","No"]);
+    liSheet.getRange(2,1,liRows.length,5).setValues(liRows);
+    const logSheet = ss.insertSheet("Daily Log");
+    logSheet.getRange(1,1,1,4).setValues([["Date","Action","Company","Details"]]);
+    logSheet.getRange(1,1,1,4).setFontWeight("bold").setBackground("#222").setFontColor("#fff");
+  }
+  return ss;
+}
+
+function dailyRun() {
+  const ss = getOrCreateSheet();
+  const appSheet = ss.getSheetByName("Applications");
+  const data = appSheet.getDataRange().getValues();
+  const today = new Date();
+  const todayStr = today.toLocaleDateString("en-IN");
+  let emailsSent=0, followUpsSent=0;
+  const summaryLines=[], replies=[];
+
+  // Follow-ups
+  for (let i=1;i<data.length;i++) {
+    const row=data[i], company=row[0], email=row[3], status=row[5], sentDate=row[6], fu1Date=row[7], fu2Date=row[8];
+    if (!email||email==="portal only") continue;
+    const target = ALL_TARGETS.find(t=>t.company===company);
+    if (!target||!target.canEmail) continue;
+    if (status==="sent" && sentDate && !fu1Date) {
+      const days=Math.floor((today-new Date(sentDate))/(1000*60*60*24));
+      if (days>=SETTINGS.followUpDays) {
+        try { GmailApp.sendEmail(email,buildSubject(target,true),buildEmailBody(target,true,1),{name:PROFILE.name}); appSheet.getRange(i+1,8).setValue(todayStr); appSheet.getRange(i+1,6).setValue("follow-up-1-sent"); summaryLines.push("📧 Follow-up 1 → "+company); followUpsSent++; } catch(e){}
+      }
+    }
+    if (status==="follow-up-1-sent" && fu1Date && !fu2Date) {
+      const days=Math.floor((today-new Date(fu1Date))/(1000*60*60*24));
+      if (days>=SETTINGS.followUpDays) {
+        try { GmailApp.sendEmail(email,buildSubject(target,true),buildEmailBody(target,true,2),{name:PROFILE.name}); appSheet.getRange(i+1,9).setValue(todayStr); appSheet.getRange(i+1,6).setValue("follow-up-2-sent"); summaryLines.push("📧 Follow-up 2 → "+company); followUpsSent++; } catch(e){}
+      }
+    }
+  }
+
+  // New cold emails
+  for (let i=1;i<data.length;i++) {
+    if (emailsSent>=SETTINGS.emailsPerDay) break;
+    const row=data[i], company=row[0], email=row[3], status=row[5];
+    if (status!=="pending"||!email||email==="portal only") continue;
+    const target=ALL_TARGETS.find(t=>t.company===company);
+    if (!target||!target.canEmail) continue;
+    try {
+      GmailApp.sendEmail(email,buildSubject(target,false),buildEmailBody(target,false,0),{name:PROFILE.name});
+      appSheet.getRange(i+1,6).setValue("sent"); appSheet.getRange(i+1,7).setValue(todayStr); appSheet.getRange(i+1,5).setValue(buildSubject(target,false));
+      summaryLines.push("✅ Sent → "+company+" ("+email+")"); emailsSent++;
+    } catch(e){ summaryLines.push("❌ Failed → "+company+": "+e.message); }
+  }
+
+  // Check for replies
+  const threads=GmailApp.search("label:inbox newer_than:1d");
+  threads.forEach(thread=>{
+    const from=thread.getMessages()[0].getFrom().toLowerCase();
+    ALL_TARGETS.forEach(t=>{ if(t.email&&from.includes(t.email.split("@")[1])) replies.push("🎉 REPLY from "+t.company+"!"); });
+  });
+
+  // LinkedIn targets for today
+  const liSheet=ss.getSheetByName("LinkedIn");
+  const liData=liSheet.getDataRange().getValues();
+  const todayLI=liData.slice(1).filter(r=>r[2]==="No").slice(0,3);
+
+  // Summary email
+  const pendingCount=data.slice(1).filter(r=>r[5]==="pending"&&r[3]&&r[3]!=="portal only").length;
+  const html='<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto"><div style="background:#6c47ff;padding:18px;border-radius:10px 10px 0 0"><h2 style="color:#fff;margin:0">🚀 ReachOut Daily Report</h2><p style="color:rgba(255,255,255,.8);margin:5px 0 0">'+todayStr+' — Good morning, '+PROFILE.name.split(' ')[0]+'!</p></div><div style="background:#f8f8ff;padding:18px;border:1px solid #e0e0f0">'+
+    '<div style="display:flex;gap:10px;margin-bottom:16px">'+
+    '<div style="flex:1;background:#fff;border-radius:8px;padding:12px;text-align:center;border:1px solid #e0e0f0"><div style="font-size:26px;font-weight:bold;color:#6c47ff">'+(emailsSent+followUpsSent)+'</div><div style="font-size:11px;color:#888">Sent Today</div></div>'+
+    '<div style="flex:1;background:#fff;border-radius:8px;padding:12px;text-align:center;border:1px solid #e0e0f0"><div style="font-size:26px;font-weight:bold;color:#ff4d8d">'+pendingCount+'</div><div style="font-size:11px;color:#888">Still Pending</div></div>'+
+    '<div style="flex:1;background:#fff;border-radius:8px;padding:12px;text-align:center;border:1px solid #e0e0f0"><div style="font-size:26px;font-weight:bold;color:#00c48c">'+replies.length+'</div><div style="font-size:11px;color:#888">Replies</div></div></div>'+
+    (replies.length>0?'<div style="background:#e8fff5;border:1px solid #00c48c;border-radius:8px;padding:12px;margin-bottom:12px"><b style="color:#007a4d">🎉 Replies received!</b><br>'+replies.join('<br>')+'</div>':'')+
+    (summaryLines.length>0?'<div style="background:#fff;border-radius:8px;padding:12px;margin-bottom:12px;border:1px solid #e0e0f0"><b>📧 Today's Emails</b><br><br>'+summaryLines.map(l=>'<span style="font-size:13px">'+l+'</span>').join('<br>')+'</div>':'')+
+    (todayLI.length>0?'<div style="background:#e8f3ff;border:1px solid #0a66c2;border-radius:8px;padding:12px;margin-bottom:12px"><b style="color:#0a66c2">💼 LinkedIn targets today:</b><br><br>'+todayLI.map(r=>'<a href="'+r[1]+'" style="color:#0a66c2">'+r[0]+'</a>').join(' | ')+'</div>':'')+
+    '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px"><b style="color:#856404">📋 Your tasks today</b><ol style="margin:8px 0 0;padding-left:18px;font-size:13px;color:#555"><li>Connect with 3 LinkedIn profiles above</li><li>Apply on job portals for big companies</li><li>Reply to any recruiter messages</li></ol></div>'+
+    '</div><div style="background:#333;padding:10px;border-radius:0 0 10px 10px;text-align:center"><p style="color:#aaa;margin:0;font-size:11px">ReachOut Automation • Daily at 9am • '+PROFILE.name+'</p></div></div>';
+
+  GmailApp.sendEmail(SETTINGS.dailySummaryEmail,"🚀 ReachOut Report — "+todayStr+" | "+(emailsSent+followUpsSent)+" emails sent",summaryLines.join("\n"),{htmlBody:html,name:"ReachOut"});
+  Logger.log("Done. Sent: "+emailsSent+", Follow-ups: "+followUpsSent+", Replies: "+replies.length);
+}
+
+function setupAutomation() {
+  const ss = getOrCreateSheet();
+  ScriptApp.getProjectTriggers().forEach(t=>ScriptApp.deleteTrigger(t));
+  ScriptApp.newTrigger("dailyRun").timeBased().everyDays(1).atHour(SETTINGS.sendTimeHour).create();
+  Logger.log("✅ Setup complete! Sheet: "+ss.getUrl());
+  dailyRun();
+}
+
+function stopAutomation() {
+  ScriptApp.getProjectTriggers().forEach(t=>ScriptApp.deleteTrigger(t));
+  Logger.log("Stopped.");
+}
+`;
+}
+
+// ═══ INIT ═════════════════════════════════════════════
+window.onload=()=>{
+  seed();
+  T=JSON.parse(localStorage.getItem('rv_T')||'[]');
+  A=JSON.parse(localStorage.getItem('rv_A')||'[]');
+  LI=JSON.parse(localStorage.getItem('rv_LI')||'[]');
+  P=JSON.parse(localStorage.getItem('rv_P')||'{}');
+  CFG=JSON.parse(localStorage.getItem('rv_CFG')||'{}');
+  // Pre-load Gmail Client ID if not already saved
+  if(!CFG.gmailClientId){CFG.gmailClientId='414244463818-qi7vudvj5i0s01clem5d3iqo0h4srcf3.apps.googleusercontent.com';localStorage.setItem('rv_CFG',JSON.stringify(CFG));}
+  if(CFG.ejsPublicKey)emailjs.init(CFG.ejsPublicKey);
+  loadPUI();renderT();renderTR();updateDash();updateDashGmailCard();
+  fillSel('c-target',T.filter(t=>t.status==='pending'));fillSel('li-target',T);
+  updateMUI();updateAutoDash();
+  const lm=$('li-msg');if(lm)lm.addEventListener('input',liCC);
+  const cm=$('c-li-body');if(cm)cm.addEventListener('input',()=>ccUp('c-li-body','c-li-cc'));
+};
+</script>
+</body>
+</html>
